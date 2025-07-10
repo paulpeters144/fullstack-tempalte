@@ -25,6 +25,11 @@
       "indentWidth": 3,
       "lineWidth": 85
    },
+   "json": {
+      "formatter": {
+         "enabled": true
+      }
+   },
    "organizeImports": {
       "enabled": true
    },
