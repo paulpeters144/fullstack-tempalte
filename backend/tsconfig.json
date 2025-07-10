@@ -1,4 +1,8 @@
 {
+   "ts-node": {
+      // Do not forget to `npm i -D tsconfig-paths`
+      "require": ["tsconfig-paths/register"]
+   },
    "compilerOptions": {
       "target": "ES6",
       "module": "CommonJS",
@@ -17,5 +21,7 @@
          "@/*": ["./*"]
       }
    },
-   "types": ["node"]
+   "types": ["node"],
+   "include": ["src/**/*.ts", "./src"],
+   "exclude": ["__test__/**/*"]
 }
