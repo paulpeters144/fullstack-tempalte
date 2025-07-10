@@ -6,13 +6,17 @@
    "scripts": {
       "build": "tsc",
       "start": "node dist/server.js",
-      "dev": "ts-node src/server.ts"
+      "dev": "ts-node src/server.ts",
+      "test": "vitest",
+      "local-setup": "node scripts/local.doctor.js"
    },
    "keywords": [],
    "author": "",
    "license": "ISC",
    "packageManager": "pnpm@10.7.1",
    "dependencies": {
+      "@aws-sdk/client-dynamodb": "^3.844.0",
+      "@aws-sdk/lib-dynamodb": "^3.844.0",
       "@fastify/sensible": "^6.0.3",
       "fastify": "^5.4.0",
       "jsonwebtoken": "^9.0.2",
@@ -21,9 +25,11 @@
    "devDependencies": {
       "@types/jsonwebtoken": "^9.0.10",
       "@types/node": "^24.0.12",
+      "chalk": "^5.4.1",
       "ts-node": "^10.9.2",
       "tsconfig-paths": "^4.2.0",
       "typescript": "^5.1.6",
+      "vite-tsconfig-paths": "^4.2.1",
       "vitest": "^3.2.4"
    }
 }
