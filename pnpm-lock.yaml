@@ -31,7 +31,7 @@ importers:
         version: 9.0.2
       zod:
         specifier: ^4.0.2
-        version: 4.0.3
+        version: 4.0.5
     devDependencies:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
@@ -40,8 +40,8 @@ importers:
         specifier: ^24.0.12
         version: 24.0.13
       chalk:
-        specifier: ^5.4.1
-        version: 5.4.1
+        specifier: '4'
+        version: 4.1.2
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.0.13)(typescript@5.8.3)
@@ -113,7 +113,7 @@ importers:
     dependencies:
       zod:
         specifier: ^4.0.2
-        version: 4.0.3
+        version: 4.0.5
     devDependencies:
       vite-tsconfig-paths:
         specifier: ^4.2.1
@@ -1693,10 +1693,6 @@ packages:
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
-
-  chalk@5.4.1:
-    resolution: {integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
   character-entities-html4@2.1.0:
     resolution: {integrity: sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==}
@@ -4003,8 +3999,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@4.0.3:
-    resolution: {integrity: sha512-V78FonTAxtGAyF2xR75x0YoW8uKXdQiusoPtzbT07vH3mZiGdTQN6INuivHyYT6M2V2YRFDEKIF4ylTJh54EXg==}
+  zod@4.0.5:
+    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -5926,8 +5922,6 @@ snapshots:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
-
-  chalk@5.4.1: {}
 
   character-entities-html4@2.1.0: {}
 
@@ -8525,6 +8519,6 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@4.0.3: {}
+  zod@4.0.5: {}
 
   zwitch@2.0.4: {}
