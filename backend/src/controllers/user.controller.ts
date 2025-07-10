@@ -34,7 +34,6 @@ export const userController = (app: FastifyInstance) => {
          if (req.body.password !== "password") {
             throw new BadRequestError("invalid creds");
          }
-         console.log(req.body);
          const jwt = di.securitySvc().createJwtFrom("12345");
          return rep.send({ accessToken: jwt });
       } catch (error) {

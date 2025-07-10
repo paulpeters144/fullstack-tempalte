@@ -6,7 +6,7 @@
    "scripts": {
       "build": "tsc",
       "start": "node dist/server.js",
-      "dev": "ts-node src/server.ts",
+      "dev": "tsx src/server.ts",
       "test": "vitest",
       "local-setup": "node scripts/local.doctor.js"
    },
@@ -26,8 +26,8 @@
       "@types/jsonwebtoken": "^9.0.10",
       "@types/node": "^24.0.12",
       "chalk": "4",
-      "ts-node": "^10.9.2",
       "tsconfig-paths": "^4.2.0",
+      "tsx": "^4.20.3",
       "typescript": "^5.1.6",
       "vite-tsconfig-paths": "^4.2.1",
       "vitest": "^3.2.4"
