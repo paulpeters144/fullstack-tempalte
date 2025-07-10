@@ -1,12 +1,20 @@
-import { getError } from "@/src/util/error";
-import { type Person, PersonSchema } from "@shared/types";
+import { di } from "@/src/util/di";
+import { BadRequestError, getError } from "@/src/util/error";
+import {
+   type AccessToken,
+   type LoginRequest,
+   LoginSchema,
+   type Person,
+   PersonSchema,
+   type SimpleResponse,
+} from "@shared/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export const userController = (app: FastifyInstance) => {
    const simpleHello = async (
       req: FastifyRequest<{ Body: Person }>,
       rep: FastifyReply,
-   ) => {
+   ): Promise<SimpleResponse> => {
       try {
          PersonSchema.parse(req.body);
          const { name, age } = req.body;
@@ -17,5 +25,23 @@ export const userController = (app: FastifyInstance) => {
       }
    };
 
-   app.post("/user/sayhello", simpleHello);
+   const login = async (
+      req: FastifyRequest<{ Body: LoginRequest }>,
+      rep: FastifyReply,
+   ): Promise<AccessToken> => {
+      try {
+         LoginSchema.parse(req.body);
+         if (req.body.password !== "password") {
+            throw new BadRequestError("invalid creds");
+         }
+         console.log(req.body);
+         const jwt = di.securitySvc().createJwtFrom("12345");
+         return rep.send({ accessToken: jwt });
+      } catch (error) {
+         return getError(rep, error);
+      }
+   };
+
+   app.post("/api/user/sayhello", simpleHello);
+   app.post("/api/user/login", login);
 };
