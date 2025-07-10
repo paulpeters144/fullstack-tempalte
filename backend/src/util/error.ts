@@ -1,5 +1,5 @@
-import type { FriendlyError } from "@shared/types";
-import { type ModelErrors, zodErrorMessages } from "@shared/validation";
+import type { FriendlyError } from "@shared/src/types";
+import { type ModelErrors, zodErrorMessages } from "@shared/src/validation";
 import type { FastifyError, FastifyReply } from "fastify";
 import { ZodError } from "zod";
 

@@ -1,6 +1,6 @@
 import { di } from "@/src/util/di";
 import { getError } from "@/src/util/error";
-import type { SimpleResponse } from "@shared/types";
+import type { SimpleResponse } from "@shared/src/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export const adminController = (app: FastifyInstance) => {

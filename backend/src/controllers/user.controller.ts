@@ -7,7 +7,7 @@ import {
    type Person,
    PersonSchema,
    type SimpleResponse,
-} from "@shared/types";
+} from "@shared/src/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export const userController = (app: FastifyInstance) => {

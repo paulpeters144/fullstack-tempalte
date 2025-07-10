@@ -1,7 +1,7 @@
-import { TestData } from "@/__test__/test.data";
-import { type LoginRequest, LoginSchema } from "@/types";
-import { validate } from "@/validation";
 import { describe, expect, it } from "vitest";
+import { TestData } from "~/src/__test__/test.data";
+import { type LoginRequest, LoginSchema } from "~/src/types";
+import { validate } from "~/src/validation";
 
 describe("#Validation Zod Schemas", () => {
    it("invalidate username and password", () => {
