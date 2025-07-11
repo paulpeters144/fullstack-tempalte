@@ -9,6 +9,7 @@ declare module "@remix-run/node" {
 }
 
 export default defineConfig({
+   root: __dirname,
    plugins: [
       remix({
          ssr: false,
@@ -22,4 +23,8 @@ export default defineConfig({
       }),
       tsconfigPaths(),
    ],
+   test: {
+      environment: "jsdom",
+      globals: true,
+   },
 });
