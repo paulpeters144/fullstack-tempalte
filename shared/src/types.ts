@@ -50,7 +50,8 @@ export type Person = z.infer<typeof PersonSchema>;
 export const RegisterSchema = z.object({
    email: z.email(),
    password: z.string().min(8).max(32),
-   role: z.string().min(3).max(32),
+   repassword: z.string().min(8).max(32),
+   role: z.enum(["admin", "editor", "user", "guest"]),
 });
 export type Register = z.infer<typeof RegisterSchema>;
 

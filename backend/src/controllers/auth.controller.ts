@@ -4,27 +4,12 @@ import {
    type AccessToken,
    type LoginRequest,
    LoginSchema,
-   type Person,
-   PersonSchema,
-   type SimpleResponse,
+   type Register,
+   RegisterSchema,
 } from "@shared/src/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
-export const userController = (app: FastifyInstance) => {
-   const simpleHello = async (
-      req: FastifyRequest<{ Body: Person }>,
-      rep: FastifyReply,
-   ): Promise<SimpleResponse> => {
-      try {
-         PersonSchema.parse(req.body);
-         const { name, age } = req.body;
-         const msg = `Hello, ${name}!!! You are ${age} years old.`;
-         return rep.send({ message: msg });
-      } catch (error) {
-         return getError(rep, error);
-      }
-   };
-
+export const authController = (app: FastifyInstance) => {
    const login = async (
       req: FastifyRequest<{ Body: LoginRequest }>,
       rep: FastifyReply,
@@ -41,6 +26,22 @@ export const userController = (app: FastifyInstance) => {
       }
    };
 
-   app.post("/api/user/sayhello", simpleHello);
-   app.post("/api/user/login", login);
+   const signup = async (
+      req: FastifyRequest<{ Body: Register }>,
+      rep: FastifyReply,
+   ): Promise<AccessToken> => {
+      try {
+         RegisterSchema.parse(req.body);
+         if (req.body.password !== "password") {
+            throw new BadRequestError("invalid creds");
+         }
+         const jwt = di.securitySvc().createJwtFrom("12345");
+         return rep.send({ accessToken: jwt });
+      } catch (error) {
+         return getError(rep, error);
+      }
+   };
+
+   app.post("/api/auth/signup", signup);
+   app.post("/api/auth/login", login);
 };

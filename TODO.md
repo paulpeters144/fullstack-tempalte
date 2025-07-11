@@ -13,6 +13,7 @@
     - [ ] backend
     - [ ] frontend
 
+CREATED FASTIFY BE TODO APP
 FASTIFY TODO APP ROUTES
 | Method | Route            | Description                              |
 | ------ | ---------------- | ---------------------------------------- |
