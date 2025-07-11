@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { TestData } from "~/src/__test__/test.data";
-import { type LoginRequest, LoginSchema } from "~/src/types";
 import { validate } from "~/src/validation";
+import { type LoginReq, LoginSchema } from "../req-res.types";
 
 describe("#Validation Zod Schemas", () => {
    it("invalidate username and password", () => {
       const schema = LoginSchema;
-      const input: LoginRequest = { email: "email@email", password: "pass" };
+      const input: LoginReq = { email: "email@email", password: "pass" };
 
       const { model, result } = validate(schema).on(input);
 

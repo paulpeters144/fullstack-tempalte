@@ -1,15 +1,17 @@
 import { di } from "@/src/util/di";
 import { BadRequestError, getError } from "@/src/util/error";
+import type { TodoItem } from "@shared/src/domain.types";
 import {
-   type CreateTodoRequest,
+   type CreateTodoReq,
+   type CreateTodoRes,
    CreateTodoSchema,
-   type SimpleResponse,
-   type TodoItem,
+   type PatchTodoReq,
+   type PatchTodoRes,
+   PatchTodoSchema,
+   type SimpleRes,
    type TodoParams,
    TodoParamsSchema,
-   type UpdateTodoRequest,
-   UpdateTodoSchema,
-} from "@shared/src/types";
+} from "@shared/src/req-res.types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export const todoController = (app: FastifyInstance) => {
@@ -46,9 +48,9 @@ export const todoController = (app: FastifyInstance) => {
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
-         const todoKey = `USER#${claims.id}#TD#${req.params.id}`;
+         const todoPk = `USER#${claims.id}#TD`;
          const todo = await ddb.getItem<TodoItem>({
-            itemKey: { pk: todoKey, sk: todoKey },
+            itemKey: { pk: todoPk, sk: req.params.id },
          });
 
          if (!todo) {
@@ -66,98 +68,50 @@ export const todoController = (app: FastifyInstance) => {
    };
 
    const createTodo = async (
-      req: FastifyRequest<{ Body: CreateTodoRequest }>,
+      req: FastifyRequest<{ Body: CreateTodoReq }>,
       rep: FastifyReply,
-   ): Promise<SimpleResponse> => {
+   ): Promise<CreateTodoRes> => {
       try {
          CreateTodoSchema.parse(req.body);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
          const todoId = crypto.randomUUID().replaceAll("-", "").slice(0, 25);
-         const todoKey = `USER#${claims.id}#TD#${todoId}`;
+         const todoPk = `USER#${claims.id}#TD`;
          const now = new Date();
 
          await ddb.putItem<TodoItem>({
-            key: { pk: todoKey, sk: todoKey },
+            key: { pk: todoPk, sk: todoId },
             item: {
                id: todoId,
-               title: req.body.title,
-               description: req.body.description,
-               status: "pending",
-               priority: req.body.priority,
+               todo: req.body.todo,
+               status: "in-progress",
                userId: claims.id,
                createdAt: now,
                updatedAt: now,
-               dueDate: req.body.dueDate ? new Date(req.body.dueDate) : undefined,
             },
          });
 
-         return rep.send({ message: "Todo created successfully" });
-      } catch (error) {
-         return getError(rep, error);
-      }
-   };
-
-   const updateTodo = async (
-      req: FastifyRequest<{ Body: UpdateTodoRequest }>,
-      rep: FastifyReply,
-   ): Promise<SimpleResponse> => {
-      try {
-         UpdateTodoSchema.parse(req.body);
-         const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
-         const claims = secSvc.getClaims(hashJwt);
-
-         const todoKey = `USER#${claims.id}#TD#${req.body.id}`;
-
-         const existingTodo = await ddb.getItem<TodoItem>({
-            itemKey: { pk: todoKey, sk: todoKey },
-         });
-
-         if (!existingTodo) {
-            throw new BadRequestError(`Todo not found: ${req.body.id}`);
-         }
-
-         if (existingTodo.userId !== claims.id) {
-            throw new BadRequestError("Unauthorized to update this todo");
-         }
-
-         const updatedTodo: TodoItem = {
-            ...existingTodo,
-            title: req.body.title ?? existingTodo.title,
-            description: req.body.description ?? existingTodo.description,
-            status: req.body.status ?? existingTodo.status,
-            priority: req.body.priority ?? existingTodo.priority,
-            dueDate: req.body.dueDate
-               ? new Date(req.body.dueDate)
-               : existingTodo.dueDate,
-            updatedAt: new Date(),
-         };
-
-         await ddb.putItem<TodoItem>({
-            key: { pk: todoKey, sk: todoKey },
-            item: updatedTodo,
-         });
-
-         return rep.send({ message: "Todo updated successfully" });
+         return rep.send({ todoId });
       } catch (error) {
          return getError(rep, error);
       }
    };
 
    const patchTodo = async (
-      req: FastifyRequest<{ Params: TodoParams; Body: Partial<UpdateTodoRequest> }>,
+      req: FastifyRequest<{ Body: PatchTodoReq; Params: TodoParams }>,
       rep: FastifyReply,
-   ): Promise<SimpleResponse> => {
+   ): Promise<PatchTodoRes> => {
       try {
          TodoParamsSchema.parse(req.params);
+         PatchTodoSchema.parse(req.body);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
-         const todoKey = `USER#${claims.id}#TD#${req.params.id}`;
+         const todoKey = `USER#${claims.id}#TD`;
 
          const existingTodo = await ddb.getItem<TodoItem>({
-            itemKey: { pk: todoKey, sk: todoKey },
+            itemKey: { pk: todoKey, sk: req.params.id },
          });
 
          if (!existingTodo) {
@@ -170,22 +124,17 @@ export const todoController = (app: FastifyInstance) => {
 
          const updatedTodo: TodoItem = {
             ...existingTodo,
-            ...(req.body.title && { title: req.body.title }),
-            ...(req.body.description !== undefined && {
-               description: req.body.description,
-            }),
-            ...(req.body.status && { status: req.body.status }),
-            ...(req.body.priority && { priority: req.body.priority }),
-            ...(req.body.dueDate && { dueDate: new Date(req.body.dueDate) }),
+            todo: req.body.todo ?? existingTodo.todo,
+            status: req.body.status ?? existingTodo.status,
             updatedAt: new Date(),
          };
 
          await ddb.putItem<TodoItem>({
-            key: { pk: todoKey, sk: todoKey },
+            key: { pk: todoKey, sk: req.params.id },
             item: updatedTodo,
          });
 
-         return rep.send({ message: "Todo updated successfully" });
+         return rep.send({ message: "success" });
       } catch (error) {
          return getError(rep, error);
       }
@@ -194,16 +143,16 @@ export const todoController = (app: FastifyInstance) => {
    const deleteTodo = async (
       req: FastifyRequest<{ Params: TodoParams }>,
       rep: FastifyReply,
-   ): Promise<SimpleResponse> => {
+   ): Promise<SimpleRes> => {
       try {
          TodoParamsSchema.parse(req.params);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
-         const todoKey = `USER#${claims.id}#TD#${req.params.id}`;
+         const todoKey = `USER#${claims.id}#TD`;
 
          const existingTodo = await ddb.getItem<TodoItem>({
-            itemKey: { pk: todoKey, sk: todoKey },
+            itemKey: { pk: todoKey, sk: req.params.id },
             pickKeys: ["id", "userId"],
          });
 
@@ -216,7 +165,7 @@ export const todoController = (app: FastifyInstance) => {
          }
 
          await ddb.deleteItem({
-            itemKey: { pk: todoKey, sk: todoKey },
+            itemKey: { pk: todoKey, sk: req.params.id },
          });
 
          return rep.send({ message: "Todo deleted successfully" });
@@ -244,7 +193,6 @@ export const todoController = (app: FastifyInstance) => {
    app.get("/api/todos", getAllTodos);
    app.get("/api/todos/:id", getTodoById);
    app.post("/api/todos", createTodo);
-   app.put("/api/todos", updateTodo);
    app.patch("/api/todos/:id", patchTodo);
    app.delete("/api/todos/:id", deleteTodo);
 };

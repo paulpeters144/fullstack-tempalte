@@ -1,5 +1,11 @@
+### VARIABLES ###
+@BASE_URL=http://localhost:3000/api
+@ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE1ZjllNTQ5ZDdlYTQ2Yzc5Nzk1YTk2NGEiLCJyb2xlIjoidXNlciIsImVtYWlsIjoicGF1bEBlbWFpbC5jb20iLCJpYXQiOjE3NTIyNTAyMjksImV4cCI6MTc1MjI1MzgyOX0.W2HA8zUw8cyuDzr47Pj0QYyAoYvB6poUz_gTeHdKBaw
+### VARIABLES ###
+
+########### AUTH ########### 
 ### SIGN UP
-POST http://localhost:3000/api/auth/signup
+POST {{BASE_URL}}/auth/signup
 Content-Type: application/json
 
 {
@@ -9,9 +15,8 @@ Content-Type: application/json
   "role": "user"
 }
 
-
 ### LOG IN
-POST http://localhost:3000/api/auth/login
+POST {{BASE_URL}}/auth/login
 Content-Type: application/json
 
 {
@@ -19,6 +24,40 @@ Content-Type: application/json
   "password": "password"
 }
 
-### LOG IN
-GET http://localhost:3000/api/auth/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ2YzhjM2IzMjk0NTQxNzU5ZjA2ZWEzNGQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoicGF1bEBlbWFpbC5jb20iLCJpYXQiOjE3NTIyMzMzODQsImV4cCI6MTc1MjIzNjk4NH0.T6c1xaQu65r76R8OzUApoNIoRs47uqIs7UOVWMbCbDI
+### GET USER
+GET {{BASE_URL}}/auth/user
+Authorization: Bearer {{ACCESS_TOKEN}}
+# ~~~~~~~ END AUTH ~~~~~~~~~
+
+########### ToDos ########### 
+### CREATE TODO
+POST {{BASE_URL}}/todos
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "todo": "test note"
+}
+
+### GET todo single
+GET {{BASE_URL}}/todos/cc1a8587b8aa478d9284f3b41
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### GET TODOs
+GET {{BASE_URL}}/todos
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### UPDATE AN ENTIRE ToDo
+PATCH {{BASE_URL}}/todos/cc1a8587b8aa478d9284f3b41
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "status": "completed"
+}
+
+### DELETE ToDo
+DELETE {{BASE_URL}}/todos/cc1a8587b8aa478d9284f3b41
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+# ~~~~~~~ END ToDos ~~~~~~~~~

@@ -1,3 +1,4 @@
+import { createDdbItem } from "@/src/access/util";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
    DeleteCommand,
@@ -6,7 +7,6 @@ import {
    PutCommand,
    QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { createDdbItem } from "./util";
 
 type GetItemQuery<T> = {
    itemKey: { pk: string; sk: string };
@@ -41,6 +41,13 @@ const client = new DynamoDBClient({
 
 const docClient = DynamoDBDocumentClient.from(client);
 
+export interface DdbAccess {
+   getItem: <T>(query: GetItemQuery<T>) => Promise<T | undefined>;
+   getItems: <T>(query: GetItemsStarsWithQuery) => Promise<T[]>;
+   putItem: <T>(query: PutItemQuery<T>) => Promise<void>;
+   deleteItem: (query: DeleteItemQuery) => Promise<void>;
+}
+
 export const createDdbAccess = (): DdbAccess => {
    const getItem = async <T>(query: GetItemQuery<T>): Promise<T | undefined> => {
       const { itemKey: key, pickKeys } = query;
@@ -48,22 +55,27 @@ export const createDdbAccess = (): DdbAccess => {
          TableName: TABLE_NAME,
          Key: { PK: key.pk, SK: key.sk },
       });
-      const result = await docClient.send(command);
+      const response = await docClient.send(command);
 
-      if (!result.Item) {
+      if (!response.Item) {
          return undefined;
       }
 
       if (!pickKeys) {
-         return result.Item as T;
+         const result: Record<string, unknown> = {};
+         Object.keys(response.Item).forEach((key) => {
+            if (!response.Item) return;
+            if (key === "PK" || key === "SK") return;
+            result[key] = response.Item[key as string];
+         });
+         return result as T;
       }
 
       const filteredItem: Partial<T> = {};
       pickKeys.forEach((key) => {
-         if (!result.Item) return;
-         if (key in result.Item) {
-            filteredItem[key] = result.Item[key as string];
-         }
+         if (!response.Item) return;
+         if (!(key in response.Item)) return;
+         filteredItem[key] = response.Item[key as string];
       });
 
       return filteredItem as T;
@@ -72,13 +84,20 @@ export const createDdbAccess = (): DdbAccess => {
    const getItems = async <T>(query: GetItemsStarsWithQuery): Promise<T[]> => {
       const { itemKey: key, startsWith } = query;
 
+      let keyConditionExpression = "PK = :pk";
+      const expressionAttributeValues: { [key: string]: string } = {
+         ":pk": key.pk,
+      };
+
+      if (startsWith) {
+         keyConditionExpression += " AND begins_with(SK, :starts_with)";
+         expressionAttributeValues[":starts_with"] = startsWith;
+      }
+
       const command = new QueryCommand({
          TableName: TABLE_NAME,
-         KeyConditionExpression: "PK = :pk AND begins_with(SK, :starts_with)",
-         ExpressionAttributeValues: {
-            ":pk": key.pk,
-            ":starts_with": startsWith || "",
-         },
+         KeyConditionExpression: keyConditionExpression,
+         ExpressionAttributeValues: expressionAttributeValues,
       });
 
       const result = await docClient.send(command);
@@ -112,10 +131,3 @@ export const createDdbAccess = (): DdbAccess => {
       deleteItem,
    };
 };
-
-export interface DdbAccess {
-   getItem: <T>(query: GetItemQuery<T>) => Promise<T | undefined>;
-   getItems: <T>(query: GetItemsStarsWithQuery) => Promise<T[]>;
-   putItem: <T>(query: PutItemQuery<T>) => Promise<void>;
-   deleteItem: (query: DeleteItemQuery) => Promise<void>;
-}

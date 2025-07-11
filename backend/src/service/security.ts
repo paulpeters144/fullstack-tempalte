@@ -1,5 +1,5 @@
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
-import type { UserClaims } from "@shared/src/types";
+import type { UserClaims } from "@shared/src/domain.types";
 import jwt from "jsonwebtoken";
 
 export interface SecurityService {

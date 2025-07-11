@@ -1,15 +1,14 @@
 import { di } from "@/src/util/di";
 import { BadRequestError, getError } from "@/src/util/error";
+import type { UserAllInfo, UserBasic } from "@shared/src/domain.types";
 import {
-   type AccessToken,
-   type LoginRequest,
+   type AccessTokenRes,
+   type LoginReq,
    LoginSchema,
-   type Register,
+   type RegisterReq,
    RegisterSchema,
-   type SimpleResponse,
-   type UserAllInfo,
-   type UserBasic,
-} from "@shared/src/types";
+   type SimpleRes,
+} from "@shared/src/req-res.types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export const authController = (app: FastifyInstance) => {
@@ -17,9 +16,9 @@ export const authController = (app: FastifyInstance) => {
    const ddb = di.ddbAccess();
 
    const signup = async (
-      req: FastifyRequest<{ Body: Register }>,
+      req: FastifyRequest<{ Body: RegisterReq }>,
       rep: FastifyReply,
-   ): Promise<SimpleResponse> => {
+   ): Promise<SimpleRes> => {
       try {
          RegisterSchema.parse(req.body);
          const key = `USER#EMAIL#${req.body.email.toLocaleLowerCase()}`;
@@ -49,9 +48,9 @@ export const authController = (app: FastifyInstance) => {
    };
 
    const login = async (
-      req: FastifyRequest<{ Body: LoginRequest }>,
+      req: FastifyRequest<{ Body: LoginReq }>,
       rep: FastifyReply,
-   ): Promise<AccessToken> => {
+   ): Promise<AccessTokenRes> => {
       try {
          LoginSchema.parse(req.body);
 

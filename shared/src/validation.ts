@@ -54,7 +54,12 @@ export const zodErrorMessages = <T>(error: z.ZodError): Validation<T> => {
             }
 
             const lastKey = err.path[err.path.length - 1];
-            obj[lastKey] = err.message as string | null;
+            if (lastKey) {
+               obj[lastKey] = err.message as string | null;
+            }
+            if (err.code === "custom") {
+               obj.message = err.message;
+            }
          }
       }
    } catch (err) {
