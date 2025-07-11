@@ -13,6 +13,8 @@
     - [ ] backend
     - [ ] frontend
 
+    - [ ] fastify be todo app
+
 CREATED FASTIFY BE TODO APP
 FASTIFY TODO APP ROUTES
 | Method | Route            | Description                              |
@@ -27,9 +29,9 @@ FASTIFY TODO APP ROUTES
 
 | Method | Route              | Description                |
 | ------ | ------------------ | -------------------------- |
-| POST   | `/api/auth/login`  | Login user                 |
-| POST   | `/api/auth/signup` | Register new user          |
-| GET    | `/api/me`          | Get current logged-in user |
+| POST   | `/api/auth/login`  | Login user                 | ✅
+| POST   | `/api/auth/signup` | Register new user          | ✅
+| GET    | `/api/me`          | Get current logged-in user | ✅
 
 using to view local ddb table
 https://github.com/aaronshaf/dynamodb-admin

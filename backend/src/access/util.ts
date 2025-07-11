@@ -5,6 +5,8 @@ type DynamoDBValue =
    | DynamoDBValue[]
    | { [key: string]: DynamoDBValue };
 
+type DynamoDBInput = Record<string, DynamoDBValue>;
+
 type SerializedDynamoDBPrimitive = string | number | boolean;
 
 type SerializedDynamoDBValue =
@@ -12,22 +14,17 @@ type SerializedDynamoDBValue =
    | SerializedDynamoDBValue[]
    | { [key: string]: SerializedDynamoDBValue };
 
-type DynamoDBInput = Record<string, DynamoDBValue>;
-
 type DynamoDBItem = {
    PK: string;
    SK: string;
 } & Record<string, SerializedDynamoDBValue>;
 
+class CreateDdbItemErr extends Error {}
+
 export const createDdbItem = <T extends DynamoDBInput>(props: {
    key: { pk: string; sk: string };
    item?: T;
 }): DynamoDBItem => {
-   const { item, key } = props;
-   const dynamoDBItem: DynamoDBItem = {
-      PK: key.pk,
-      SK: key.sk,
-   };
    const isPrimitiveType = (value: DynamoDBValue): value is DynamoDBPrimitive => {
       return (
          typeof value === "string" ||
@@ -42,7 +39,7 @@ export const createDdbItem = <T extends DynamoDBInput>(props: {
       depth = 0,
    ): SerializedDynamoDBValue => {
       if (depth >= 10) {
-         throw new Error("Recursion depth exceeded 10 levels");
+         throw new CreateDdbItemErr("Recursion depth exceeded 10 levels");
       }
 
       if (isPrimitiveType(value)) {
@@ -73,6 +70,12 @@ export const createDdbItem = <T extends DynamoDBInput>(props: {
       return processedObject;
    };
 
+   const { item, key } = props;
+   const dynamoDBItem: DynamoDBItem = {
+      PK: key.pk,
+      SK: key.sk,
+   };
+
    if (!item) {
       return dynamoDBItem;
    }
@@ -83,3 +86,42 @@ export const createDdbItem = <T extends DynamoDBInput>(props: {
 
    return dynamoDBItem;
 };
+
+// type DynamoDBPrimitive = string | number | boolean | Date;
+
+// type DynamoDBValue =
+//    | DynamoDBPrimitive
+//    | DynamoDBValue[]
+//    | { [key: string]: DynamoDBValue };
+
+// type DynamoDBInput = Record<string, DynamoDBValue>;
+
+// type DynamoDBItem<T> =
+//    | ({
+//         PK: string;
+//         SK: string;
+//      } & T)
+//    | {
+//         PK: string;
+//         SK: string;
+//      };
+
+// export const createDdbItem = <T extends DynamoDBInput>(props: {
+//    key: { pk: string; sk: string };
+//    item?: T | undefined;
+// }): DynamoDBItem<T> => {
+//    const { item, key } = props;
+
+//    if (!item) {
+//       return {
+//          PK: key.pk,
+//          SK: key.sk,
+//       };
+//    }
+
+//    return {
+//       PK: key.pk,
+//       SK: key.sk,
+//       ...item,
+//    };
+// };

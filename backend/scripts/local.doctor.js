@@ -146,12 +146,12 @@ const createOrRecreateDdbTable = async () => {
       const params = {
          TableName: tableName,
          KeySchema: [
-            { AttributeName: "pk", KeyType: "HASH" },
-            { AttributeName: "sk", KeyType: "RANGE" },
+            { AttributeName: "PK", KeyType: "HASH" },
+            { AttributeName: "SK", KeyType: "RANGE" },
          ],
          AttributeDefinitions: [
-            { AttributeName: "pk", AttributeType: "S" },
-            { AttributeName: "sk", AttributeType: "S" },
+            { AttributeName: "PK", AttributeType: "S" },
+            { AttributeName: "SK", AttributeType: "S" },
          ],
          ProvisionedThroughput: {
             ReadCapacityUnits: 5,

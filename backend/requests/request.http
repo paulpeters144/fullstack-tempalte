@@ -1,13 +1,17 @@
-POST http://localhost:3000/api/user/sayhello
+### SIGN UP
+POST http://localhost:3000/api/auth/signup
 Content-Type: application/json
 
 {
-  "name": "paul",
-  "age": 36
+  "email": "paul@email.com",
+  "password": "password",
+  "repassword": "password",
+  "role": "user"
 }
 
-###
-POST http://localhost:3000/api/user/login
+
+### LOG IN
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -15,6 +19,6 @@ Content-Type: application/json
   "password": "password"
 }
 
-### 
-GET http://localhost:3000/api/admin/protected
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NSIsImlhdCI6MTc1MjE3NTk4MSwiZXhwIjoxNzUyMTc5NTgxfQ.sKs2Pf0BqUMD3BuYAuxVxAaE_fdHAW68S0f4BcPXzlU
+### LOG IN
+GET http://localhost:3000/api/auth/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ2YzhjM2IzMjk0NTQxNzU5ZjA2ZWEzNGQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoicGF1bEBlbWFpbC5jb20iLCJpYXQiOjE3NTIyMzMzODQsImV4cCI6MTc1MjIzNjk4NH0.T6c1xaQu65r76R8OzUApoNIoRs47uqIs7UOVWMbCbDI
