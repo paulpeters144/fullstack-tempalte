@@ -14,7 +14,6 @@ describe("Auth API Integration Tests", () => {
    it("should successfully complete the full authentication flow", async () => {
       const uniqueEmail = `testuser_${Date.now()}@example.com`;
       const testPassword = "TestPassword123!";
-      let accessToken = "";
       const signupData: RegisterReq = {
          email: uniqueEmail,
          password: testPassword,
@@ -31,9 +30,9 @@ describe("Auth API Integration Tests", () => {
       const loginRes = await api.auth.login(loginData);
       expect(loginRes).toHaveProperty("accessToken");
       expect(typeof loginRes.accessToken).toBe("string");
-      accessToken = loginRes.accessToken;
+      api.auth.setToken(loginRes.accessToken);
 
-      const userRes = await api.auth.getUser(accessToken);
+      const userRes = await api.auth.getUser();
       expect(userRes).toHaveProperty("id");
       expect(userRes).toHaveProperty("email", uniqueEmail);
       expect(userRes).toHaveProperty("role", "user");
@@ -41,32 +40,23 @@ describe("Auth API Integration Tests", () => {
       expect(typeof userRes.id).toBe("string");
       expect(typeof userRes.createdAt).toBe("string");
 
-      const deleteRes = await api.auth.deleteUser(accessToken);
+      const deleteRes = await api.auth.deleteUser();
       expect(deleteRes).toEqual({ message: "success" });
    });
 
    it("should fail login with incorrect password", async () => {
       // arrange
-      const uniqueEmail = `testuser_${Date.now()}@example.com`;
-      const testPassword = "TestPassword123!";
-      const { accessToken } = await api.auth
-         .signup({
-            email: uniqueEmail,
-            password: testPassword,
-            repassword: testPassword,
-            role: "user",
-         })
-         .then(() =>
-            api.auth.login({
-               email: uniqueEmail,
-               password: testPassword,
-            }),
-         );
+      const email = `testuser_${Date.now()}@example.com`;
+      const password = "TestPassword123!";
+      await api.auth
+         .signup({ email, password, repassword: password, role: "user" })
+         .then(() => api.auth.login({ email, password }))
+         .then((res) => api.auth.setToken(res.accessToken));
 
       try {
          // act
          await api.auth.login({
-            email: uniqueEmail,
+            email: email,
             password: "BadPwd123",
          });
       } catch (error) {
@@ -79,12 +69,11 @@ describe("Auth API Integration Tests", () => {
       }
 
       // clean up
-      await api.auth.deleteUser(accessToken);
+      await api.auth.deleteUser();
    });
 });
 
 describe("Todo API integration", () => {
-   let accessToken: string;
    let createdTodoId: string;
 
    const testUser: RegisterReq = {
@@ -95,45 +84,44 @@ describe("Todo API integration", () => {
    };
 
    beforeAll(async () => {
-      await api.auth.signup(testUser);
-      const loginRes = await api.auth.login({
-         email: testUser.email,
-         password: testUser.password,
-      });
-      accessToken = loginRes.accessToken;
+      await api.auth
+         .signup(testUser)
+         .then(() => api.auth.login({ ...testUser }))
+         .then((res) => api.auth.setToken(res.accessToken));
+
       const createPayload: CreateTodoReq = {
          todo: "Test Todo",
          status: "in-progress",
       };
-      const res = await api.todo.create(accessToken, createPayload);
+      const res = await api.todo.create(createPayload);
       expect(res.todoId).toBeDefined();
       createdTodoId = res.todoId;
    });
 
    afterAll(async () => {
-      const res = await api.auth.deleteUser(accessToken);
+      const res = await api.auth.deleteUser();
       expect(res.message).toBeTruthy();
    });
 
    it("get all todos", async () => {
-      const todos = await api.todo.getAll(accessToken);
+      const todos = await api.todo.getAll();
       const found = todos.find((t) => t.id === createdTodoId);
       expect(found).toBeDefined();
    });
 
    it("get todo by id", async () => {
-      const todo = await api.todo.getById(accessToken, createdTodoId);
+      const todo = await api.todo.getById(createdTodoId);
       expect(todo.id).toBe(createdTodoId);
    });
 
    it("patch todo", async () => {
       const patchPayload: PatchTodoReq = { status: "completed" };
-      const res = await api.todo.patch(accessToken, createdTodoId, patchPayload);
+      const res = await api.todo.patch(createdTodoId, patchPayload);
       expect(res.status).toBe(patchPayload.status);
    });
 
    it("delete todo", async () => {
-      const res = await api.todo.delete(accessToken, createdTodoId);
+      const res = await api.todo.delete(createdTodoId);
       expect(res.message).toBeDefined();
    });
 });

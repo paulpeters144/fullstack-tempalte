@@ -15,13 +15,18 @@
       "@conform-to/zod": "^1.8.1",
       "@remix-run/node": "^2.16.8",
       "@remix-run/react": "^2.16.8",
+      "crypto-js": "^4.2.0",
       "isbot": "^4",
+      "js-cookie": "^3.0.5",
+      "jwt-decode": "^4.0.0",
       "react": "^18.2.0",
       "react-dom": "^18.2.0",
       "zod": "^4.0.2"
    },
    "devDependencies": {
       "@remix-run/dev": "^2.16.8",
+      "@types/crypto-js": "^4.2.2",
+      "@types/js-cookie": "^3.0.6",
       "@types/react": "^18.2.20",
       "@types/react-dom": "^18.2.7",
       "@typescript-eslint/parser": "^6.7.4",

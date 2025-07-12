@@ -33,6 +33,7 @@ async function fetchData<T>(url: string, options?: RequestInit): Promise<T> {
 
 export const apiClient = (props: { baseUrl: string }) => {
    const { baseUrl } = props;
+   let accessToken = "";
 
    return {
       auth: {
@@ -58,56 +59,56 @@ export const apiClient = (props: { baseUrl: string }) => {
             return res;
          },
 
-         getUser: async (token: string): Promise<UserBasic> => {
+         getUser: async (): Promise<UserBasic> => {
             const res = await fetchData<UserBasic>(`${baseUrl}/auth/user`, {
                method: "GET",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                   "Content-Type": "application/json",
                },
             });
             return res;
          },
 
-         deleteUser: async (token: string): Promise<SimpleRes> => {
+         deleteUser: async (): Promise<SimpleRes> => {
             const res = await fetchData<SimpleRes>(`${baseUrl}/auth/user`, {
                method: "DELETE",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                },
             });
             return res;
          },
+         setToken: (token: string) => {
+            accessToken = token;
+         },
       },
       todo: {
-         getAll: async (token: string): Promise<TodoItem[]> => {
+         getAll: async (): Promise<TodoItem[]> => {
             return fetchData<TodoItem[]>(`${baseUrl}/todos`, {
                method: "GET",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                   "Content-Type": "application/json",
                },
             });
          },
 
-         getById: async (token: string, todoId: string): Promise<TodoItem> => {
+         getById: async (todoId: string): Promise<TodoItem> => {
             return fetchData<TodoItem>(`${baseUrl}/todos/${todoId}`, {
                method: "GET",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                   "Content-Type": "application/json",
                },
             });
          },
 
-         create: async (
-            token: string,
-            data: CreateTodoReq,
-         ): Promise<CreateTodoRes> => {
+         create: async (data: CreateTodoReq): Promise<CreateTodoRes> => {
             return fetchData<CreateTodoRes>(`${baseUrl}/todos`, {
                method: "POST",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                   "Content-Type": "application/json",
                },
                body: JSON.stringify(data),
@@ -115,25 +116,24 @@ export const apiClient = (props: { baseUrl: string }) => {
          },
 
          patch: async (
-            token: string,
             todoId: string,
             data: PatchTodoReq,
          ): Promise<PatchTodoRes> => {
             return fetchData<PatchTodoRes>(`${baseUrl}/todos/${todoId}`, {
                method: "PATCH",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                   "Content-Type": "application/json",
                },
                body: JSON.stringify(data),
             });
          },
 
-         delete: async (token: string, todoId: string): Promise<SimpleRes> => {
+         delete: async (todoId: string): Promise<SimpleRes> => {
             return fetchData<SimpleRes>(`${baseUrl}/todos/${todoId}`, {
                method: "DELETE",
                headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${accessToken}`,
                },
             });
          },
