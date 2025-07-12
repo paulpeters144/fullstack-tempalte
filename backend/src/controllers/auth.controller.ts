@@ -73,7 +73,10 @@ export const authController = (app: FastifyInstance) => {
       }
    };
 
-   const getUser = async (req: FastifyRequest, rep: FastifyReply) => {
+   const getUser = async (
+      req: FastifyRequest,
+      rep: FastifyReply,
+   ): Promise<UserBasic> => {
       try {
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
@@ -83,6 +86,30 @@ export const authController = (app: FastifyInstance) => {
             pickKeys: ["id", "email", "role", "createdAt", "lastLogin"],
          });
          return rep.send(user);
+      } catch (e) {
+         return getError(rep, e);
+      }
+   };
+
+   const deleteUser = async (
+      req: FastifyRequest,
+      rep: FastifyReply,
+   ): Promise<SimpleRes> => {
+      try {
+         const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
+         const claims = secSvc.getClaims(hashJwt);
+         const key = `USER#EMAIL#${claims.email.toLocaleLowerCase()}`;
+         const user = await ddb.getItem<UserBasic>({
+            itemKey: { pk: key, sk: key },
+            pickKeys: ["id", "email", "role", "createdAt", "lastLogin"],
+         });
+         if (!user) {
+            throw new BadRequestError("user not found");
+         }
+         await ddb.deleteItem({
+            itemKey: { pk: key, sk: key },
+         });
+         return rep.send({ message: "success" });
       } catch (e) {
          return getError(rep, e);
       }
@@ -106,4 +133,5 @@ export const authController = (app: FastifyInstance) => {
    app.post("/api/auth/signup", signup);
    app.post("/api/auth/login", login);
    app.get("/api/auth/user", getUser);
+   app.delete("/api/auth/user", deleteUser);
 };

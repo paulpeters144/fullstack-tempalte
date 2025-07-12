@@ -7,7 +7,8 @@
       "build": "remix vite:build",
       "dev": "remix vite:dev",
       "preview": "vite preview",
-      "typecheck": "tsc"
+      "typecheck": "tsc",
+      "test": "vitest run"
    },
    "dependencies": {
       "@remix-run/node": "^2.16.8",

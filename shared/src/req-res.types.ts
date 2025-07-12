@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TodoStatusEnum } from "./domain.types";
+import { type TodoItem, TodoStatusEnum } from "./domain.types";
 
 export interface FriendlyErrorRes {
    error: string;
@@ -71,4 +71,4 @@ export const PatchTodoSchema = z
       message: "at least one field must be provided for update: 'status', 'todo'",
    });
 export type PatchTodoReq = z.infer<typeof PatchTodoSchema>;
-export type PatchTodoRes = { message: string };
+export type PatchTodoRes = TodoItem;

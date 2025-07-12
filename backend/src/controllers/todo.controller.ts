@@ -134,7 +134,7 @@ export const todoController = (app: FastifyInstance) => {
             item: updatedTodo,
          });
 
-         return rep.send({ message: "success" });
+         return rep.send({ ...updatedTodo });
       } catch (error) {
          return getError(rep, error);
       }
