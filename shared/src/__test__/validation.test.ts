@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { TestData } from "~/src/__test__/test.data";
 import { validate } from "~/src/validation";
-import { type LoginReq, LoginSchema } from "../req-res.types";
+import { type LoginReq, loginSchema } from "../req-res.types";
 
 describe("#Validation Zod Schemas", () => {
    it("invalidate username and password", () => {
-      const schema = LoginSchema;
+      const schema = loginSchema;
       const input: LoginReq = { email: "email@email", password: "pass" };
 
       const { model, result } = validate(schema).on(input);
@@ -16,7 +16,7 @@ describe("#Validation Zod Schemas", () => {
    });
 
    it("invalidate incorrect usage of zValidate", () => {
-      const schema = LoginSchema;
+      const schema = loginSchema;
 
       // @ts-ignore: only using for testing a failing example
       const { model, result } = validate(schema).on({});
@@ -26,7 +26,7 @@ describe("#Validation Zod Schemas", () => {
    });
 
    it("validate username and password", () => {
-      const schema = LoginSchema;
+      const schema = loginSchema;
       const input = { email: "email@email.com", password: "password" };
 
       const { model, result } = validate(schema).on(input);

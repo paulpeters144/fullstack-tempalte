@@ -13,22 +13,28 @@ export interface AccessTokenRes {
    accessToken: string;
 }
 
-export const LoginSchema = z.object({
+export const loginSchema = z.object({
    email: z.email(),
    password: z
       .string()
       .min(8, { message: "Password must be more than 8 characters" })
       .max(32, { message: "Password must be less than 32 characters" }),
 });
-export type LoginReq = z.infer<typeof LoginSchema>;
+export type LoginReq = z.infer<typeof loginSchema>;
 export type LoginRes = { accessToken: string };
 
-export const RegisterSchema = z
+export const registerSchema = z
    .object({
       email: z.email(),
-      password: z.string().min(8).max(32),
-      repassword: z.string().min(8).max(32),
-      role: z.enum(["admin", "editor", "user", "guest"]),
+      password: z
+         .string()
+         .min(8, { message: "Password must be more than 8 characters" })
+         .max(32, { message: "Password must be less than 32 characters" }),
+      repassword: z
+         .string()
+         .min(8, { message: "Password must be more than 8 characters" })
+         .max(32, { message: "Password must be less than 32 characters" }),
+      role: z.enum(["admin", "editor", "user", "guest"]).default("user"),
    })
    .refine(
       (s) => {
@@ -40,25 +46,25 @@ export const RegisterSchema = z
          path: ["repassword"],
       },
    );
-export type RegisterReq = z.infer<typeof RegisterSchema>;
+export type RegisterReq = z.infer<typeof registerSchema>;
 export type RegisterRes = { message: string };
 
-export const CreateTodoSchema = z.object({
+export const createTodoSchema = z.object({
    todo: z
       .string()
       .min(1, { message: "todo is required." })
       .max(200, { message: "todo must not exceed 200 characters." }),
    status: TodoStatusEnum.default("in-progress"),
 });
-export type CreateTodoReq = z.infer<typeof CreateTodoSchema>;
+export type CreateTodoReq = z.infer<typeof createTodoSchema>;
 export type CreateTodoRes = { todoId: string };
 
-export const TodoParamsSchema = z.object({
+export const todoParamsSchema = z.object({
    id: z.string().min(1, "ID is required"),
 });
-export type TodoParams = z.infer<typeof TodoParamsSchema>;
+export type TodoParams = z.infer<typeof todoParamsSchema>;
 
-export const PatchTodoSchema = z
+export const patchTodoSchema = z
    .object({
       todo: z
          .string()
@@ -70,5 +76,5 @@ export const PatchTodoSchema = z
    .refine((s) => s.status || s.todo, {
       message: "at least one field must be provided for update: 'status', 'todo'",
    });
-export type PatchTodoReq = z.infer<typeof PatchTodoSchema>;
+export type PatchTodoReq = z.infer<typeof patchTodoSchema>;
 export type PatchTodoRes = TodoItem;

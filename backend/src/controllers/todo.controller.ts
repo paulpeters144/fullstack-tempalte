@@ -4,13 +4,13 @@ import type { TodoItem } from "@shared/src/domain.types";
 import {
    type CreateTodoReq,
    type CreateTodoRes,
-   CreateTodoSchema,
    type PatchTodoReq,
    type PatchTodoRes,
-   PatchTodoSchema,
    type SimpleRes,
    type TodoParams,
-   TodoParamsSchema,
+   createTodoSchema,
+   patchTodoSchema,
+   todoParamsSchema,
 } from "@shared/src/req-res.types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
@@ -44,7 +44,7 @@ export const todoController = (app: FastifyInstance) => {
       rep: FastifyReply,
    ): Promise<TodoItem> => {
       try {
-         TodoParamsSchema.parse(req.params);
+         todoParamsSchema.parse(req.params);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
@@ -72,7 +72,7 @@ export const todoController = (app: FastifyInstance) => {
       rep: FastifyReply,
    ): Promise<CreateTodoRes> => {
       try {
-         CreateTodoSchema.parse(req.body);
+         createTodoSchema.parse(req.body);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
@@ -103,8 +103,8 @@ export const todoController = (app: FastifyInstance) => {
       rep: FastifyReply,
    ): Promise<PatchTodoRes> => {
       try {
-         TodoParamsSchema.parse(req.params);
-         PatchTodoSchema.parse(req.body);
+         todoParamsSchema.parse(req.params);
+         patchTodoSchema.parse(req.body);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
@@ -145,7 +145,7 @@ export const todoController = (app: FastifyInstance) => {
       rep: FastifyReply,
    ): Promise<SimpleRes> => {
       try {
-         TodoParamsSchema.parse(req.params);
+         todoParamsSchema.parse(req.params);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 

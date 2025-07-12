@@ -4,10 +4,10 @@ import type { UserAllInfo, UserBasic } from "@shared/src/domain.types";
 import {
    type AccessTokenRes,
    type LoginReq,
-   LoginSchema,
    type RegisterReq,
-   RegisterSchema,
    type SimpleRes,
+   loginSchema,
+   registerSchema,
 } from "@shared/src/req-res.types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
@@ -20,7 +20,7 @@ export const authController = (app: FastifyInstance) => {
       rep: FastifyReply,
    ): Promise<SimpleRes> => {
       try {
-         RegisterSchema.parse(req.body);
+         registerSchema.parse(req.body);
          const key = `USER#EMAIL#${req.body.email.toLocaleLowerCase()}`;
          const user = await ddb.getItem<UserAllInfo>({
             itemKey: { pk: key, sk: key },
@@ -52,7 +52,7 @@ export const authController = (app: FastifyInstance) => {
       rep: FastifyReply,
    ): Promise<AccessTokenRes> => {
       try {
-         LoginSchema.parse(req.body);
+         loginSchema.parse(req.body);
 
          const key = `USER#EMAIL#${req.body.email.toLocaleLowerCase()}`;
          const user = await ddb.getItem<UserAllInfo>({

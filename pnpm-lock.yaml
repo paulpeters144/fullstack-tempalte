@@ -63,6 +63,12 @@ importers:
 
   frontend:
     dependencies:
+      '@conform-to/react':
+        specifier: ^1.8.1
+        version: 1.8.1(react@18.3.1)
+      '@conform-to/zod':
+        specifier: ^1.8.1
+        version: 1.8.1(zod@4.0.5)
       '@remix-run/node':
         specifier: ^2.16.8
         version: 2.16.8(typescript@5.8.3)
@@ -78,6 +84,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      zod:
+        specifier: ^4.0.2
+        version: 4.0.5
     devDependencies:
       '@remix-run/dev':
         specifier: ^2.16.8
@@ -464,6 +473,19 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
+
+  '@conform-to/dom@1.8.1':
+    resolution: {integrity: sha512-Sg4Jz31ZyiqbFHAKOmG+sVHtukku2Xmxv9ObYzj/TrKMXF1R9qN3ShucAIZWtRaw9l9vZGiqpDnSyfevmiBxuQ==}
+
+  '@conform-to/react@1.8.1':
+    resolution: {integrity: sha512-+bm+j0MOeOxrhrjWeoLmpmt+m1djZmPM/qE+AH5+8RewuC6GyXEXPyWAyES9bw9mZJ/WqInVS6Ljrf4gQ0I0zA==}
+    peerDependencies:
+      react: '>=18'
+
+  '@conform-to/zod@1.8.1':
+    resolution: {integrity: sha512-OO3CvfA1STL68oTKTMEcXWR/pBwWfJDSRVvBiR34gLlkZBV01Kfvmea2kQarFXLCJSANvjUyG52OZe9GxvPUGw==}
+    peerDependencies:
+      zod: ^3.21.0
 
   '@csstools/color-helpers@5.0.2':
     resolution: {integrity: sha512-JqWH1vsgdGcw2RR6VliXXdA0/59LttzlU8UlRT/iUUsEeWfYq8I+K0yhihEUTTHLRm1EXvpsCx3083EU15ecsA==}
@@ -4774,6 +4796,18 @@ snapshots:
 
   '@biomejs/cli-win32-x64@1.9.4':
     optional: true
+
+  '@conform-to/dom@1.8.1': {}
+
+  '@conform-to/react@1.8.1(react@18.3.1)':
+    dependencies:
+      '@conform-to/dom': 1.8.1
+      react: 18.3.1
+
+  '@conform-to/zod@1.8.1(zod@4.0.5)':
+    dependencies:
+      '@conform-to/dom': 1.8.1
+      zod: 4.0.5
 
   '@csstools/color-helpers@5.0.2': {}
 
