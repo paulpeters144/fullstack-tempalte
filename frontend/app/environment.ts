@@ -1,15 +1,15 @@
 export type Stage = "prod" | "uat" | "local";
 
-interface IEnvironment {
-   apiBaseUrl?: string;
-   cookieKey?: string;
-   stage?: Stage;
+interface Environment {
+   baseUrl: string;
+   cookieKey: string;
+   stage: Stage;
 }
 
-const environment: IEnvironment = (() => {
+const environment: Environment = (() => {
    const stage = (import.meta.env?.VITE_STAGE as Stage) ?? "local";
    return {
-      apiBaseUrl: import.meta.env?.VITE_API_URL ?? "",
+      baseUrl: import.meta.env?.VITE_API_URL ?? "",
       cookieKey: import.meta.env?.VITE_COOKIE_KEY ?? "",
       stage,
       lastBuild: import.meta.env?.VITE_BUILD_TIMESTAMP,

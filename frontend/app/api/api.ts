@@ -1,3 +1,4 @@
+import { environment } from "@/environment";
 import type { TodoItem, UserBasic } from "@shared/src/domain.types";
 import type {
    AccessTokenRes,
@@ -141,5 +142,4 @@ export const apiClient = (props: { baseUrl: string }) => {
    };
 };
 
-const BASE_URL = "http://localhost:3000/api";
-export const api = apiClient({ baseUrl: BASE_URL });
+export const api = apiClient({ baseUrl: environment.baseUrl });
