@@ -13,7 +13,6 @@
    "dependencies": {
       "@remix-run/node": "^2.16.8",
       "@remix-run/react": "^2.16.8",
-      "@tanstack/react-query": "^5.83.0",
       "isbot": "^4",
       "react": "^18.2.0",
       "react-dom": "^18.2.0"
