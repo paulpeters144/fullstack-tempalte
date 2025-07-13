@@ -1,8 +1,8 @@
-import { api } from "@/api/api";
-import { secureCookie } from "@/util/cookie";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "@remix-run/react";
-import { loginSchema, registerSchema } from "@shared/src/req-res.types";
+import { api } from "~/api/api";
+import { secureCookie } from "~/util/cookie";
+import { loginSchema, registerSchema } from "~shared/src/req-res.types";
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 

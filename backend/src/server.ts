@@ -1,6 +1,6 @@
-import register, * as ctrl from "@/src/controllers/z_register";
 import cors from "@fastify/cors";
 import fastify, { type FastifyInstance } from "fastify";
+import register, * as ctrl from "~/src/controllers/z_register";
 
 export const app: FastifyInstance = fastify();
 const PORT = 3000;

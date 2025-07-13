@@ -1,5 +1,3 @@
-import { createDdbItem } from "@/src/access/util";
-import type { Env } from "@/src/config/env";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
    DeleteCommand,
@@ -8,6 +6,8 @@ import {
    PutCommand,
    QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { createDdbItem } from "~/src/access/util";
+import type { Env } from "~/src/config/env";
 
 type GetItemQuery<T> = {
    itemKey: { pk: string; sk: string };

@@ -1,8 +1,8 @@
-import { env } from "@/env";
-import log from "@/util/logger";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { env } from "~/env";
+import log from "~/util/logger";
 
 type CookieKey = "access" | "email";
 

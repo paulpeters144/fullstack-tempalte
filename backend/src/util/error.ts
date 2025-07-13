@@ -1,7 +1,7 @@
-import type { FriendlyErrorRes } from "@shared/src/req-res.types";
-import { type ModelErrors, zodErrorMessages } from "@shared/src/validation";
 import type { FastifyError, FastifyReply } from "fastify";
 import { ZodError } from "zod";
+import type { FriendlyErrorRes } from "~shared/src/req-res.types";
+import { type ModelErrors, zodErrorMessages } from "~shared/src/validation";
 
 function isFastifyError(obj: unknown): boolean {
    if (!(obj instanceof Error)) return false;
@@ -24,7 +24,7 @@ export const getError = (reply: FastifyReply, error: unknown): FastifyReply => {
          const message: ModelErrors<unknown> = { error: err.model };
          return reply.code(400).send(message);
       }
-      if (error instanceof BadRequestError) {
+      if (error instanceof BadRequestError || error instanceof NotFoundError) {
          const message: FriendlyErrorRes = { error: error.message };
          return reply.code(400).send(message);
       }
@@ -44,5 +44,12 @@ export class BadRequestError extends Error {
    constructor(message: string) {
       super(message);
       this.name = "BadRequestError";
+   }
+}
+
+export class NotFoundError extends Error {
+   constructor(message: string) {
+      super(message);
+      this.name = "NotFound";
    }
 }

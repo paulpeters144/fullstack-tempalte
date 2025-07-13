@@ -1,7 +1,7 @@
-import { env } from "@/env";
-import { secureCookie } from "@/util/cookie";
-import log from "@/util/logger";
-import type { TodoBasic, UserBasic } from "@shared/src/domain.types";
+import { env } from "~/env";
+import { secureCookie } from "~/util/cookie";
+import log from "~/util/logger";
+import type { TodoBasic, UserBasic } from "~shared/src/domain.types";
 import type {
    AccessTokenRes,
    CreateTodoReq,
@@ -12,7 +12,7 @@ import type {
    PatchTodoRes,
    RegisterReq,
    SimpleRes,
-} from "@shared/src/req-res.types";
+} from "~shared/src/req-res.types";
 
 type Result<T> =
    | {

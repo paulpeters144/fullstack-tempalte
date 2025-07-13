@@ -1,5 +1,5 @@
-import type { LoginReq, PatchTodoReq, RegisterReq } from "@shared/src/req-res.types";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { LoginReq, PatchTodoReq, RegisterReq } from "~shared/src/req-res.types";
 import { apiClient } from "./api";
 
 const BASE_URL = "http://localhost:3000/api";

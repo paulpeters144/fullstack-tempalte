@@ -1,6 +1,7 @@
-import { di } from "@/src/util/di";
-import { BadRequestError, getError } from "@/src/util/error";
-import type { TodoAllData, TodoBasic } from "@shared/src/domain.types";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { di } from "~/src/util/di";
+import { BadRequestError, getError } from "~/src/util/error";
+import type { TodoAllData, TodoBasic } from "~shared/src/domain.types";
 import {
    type CreateTodoReq,
    type CreateTodoRes,
@@ -11,8 +12,7 @@ import {
    createTodoSchema,
    patchTodoSchema,
    todoParamsSchema,
-} from "@shared/src/req-res.types";
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+} from "~shared/src/req-res.types";
 
 export const todoController = (app: FastifyInstance) => {
    const secSvc = di.securitySvc();
@@ -50,19 +50,16 @@ export const todoController = (app: FastifyInstance) => {
          const claims = secSvc.getClaims(hashJwt);
 
          const todoPk = `USER#${claims.id}#TD`;
-         const todo = await ddb.getItem<TodoAllData>({
+         const todo = await ddb.getItem<TodoBasic>({
             itemKey: { pk: todoPk, sk: req.params.id },
+            pickKeys: ["id", "todo", "status", "createdAt"],
          });
 
          if (!todo) {
             throw new BadRequestError(`Todo not found: ${req.params.id}`);
          }
 
-         if (todo.userId !== claims.id) {
-            throw new BadRequestError("Unauthorized to access this todo");
-         }
-         const result = { id: todo.id, todo: todo.todo, status: todo.status };
-         return rep.send(result);
+         return todo;
       } catch (error) {
          return getError(rep, error);
       }
@@ -93,7 +90,7 @@ export const todoController = (app: FastifyInstance) => {
             },
          });
 
-         return rep.send({ todoId });
+         return { todoId };
       } catch (error) {
          return getError(rep, error);
       }
@@ -135,7 +132,7 @@ export const todoController = (app: FastifyInstance) => {
             item: updatedTodo,
          });
 
-         return rep.send({ ...updatedTodo });
+         return { ...updatedTodo };
       } catch (error) {
          return getError(rep, error);
       }
@@ -169,7 +166,7 @@ export const todoController = (app: FastifyInstance) => {
             itemKey: { pk: todoKey, sk: req.params.id },
          });
 
-         return rep.send({ message: "Todo deleted successfully" });
+         return { message: "success" };
       } catch (error) {
          return getError(rep, error);
       }

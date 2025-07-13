@@ -1,8 +1,8 @@
-import type { clientAction } from "@/routes/_index/route";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
-import { loginSchema } from "@shared/src/req-res.types";
+import type { clientAction } from "~/routes/_index/route";
+import { loginSchema } from "~shared/src/req-res.types";
 
 interface LoginFormProps {
    onToggleRegister: () => void;

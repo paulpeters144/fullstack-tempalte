@@ -1,4 +1,4 @@
-import type { Stage } from "@/env";
+import type { Stage } from "~/env";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 

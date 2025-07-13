@@ -1,7 +1,3 @@
-import { pageAction } from "@/routes/_index/actions";
-import { LoginForm } from "@/routes/_index/components/Login";
-import { RegisterForm } from "@/routes/_index/components/Register";
-import { secureCookie } from "@/util/cookie";
 import type { MetaFunction } from "@remix-run/node";
 import {
    type ClientActionFunctionArgs,
@@ -9,6 +5,10 @@ import {
    useSearchParams,
 } from "@remix-run/react";
 import { useMemo, useState } from "react";
+import { pageAction } from "~/routes/_index/actions";
+import { LoginForm } from "~/routes/_index/components/Login";
+import { RegisterForm } from "~/routes/_index/components/Register";
+import { secureCookie } from "~/util/cookie";
 
 export const meta: MetaFunction = () => {
    return [

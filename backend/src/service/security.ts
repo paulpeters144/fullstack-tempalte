@@ -1,6 +1,6 @@
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
-import type { UserClaims } from "@shared/src/domain.types";
 import jwt from "jsonwebtoken";
+import type { UserClaims } from "~shared/src/domain.types";
 
 export interface SecurityService {
    createJwtFrom: (claims: UserClaims) => string;

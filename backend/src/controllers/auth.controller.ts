@@ -1,6 +1,7 @@
-import { di } from "@/src/util/di";
-import { BadRequestError, getError } from "@/src/util/error";
-import type { UserAllInfo, UserBasic } from "@shared/src/domain.types";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { di } from "~/src/util/di";
+import { BadRequestError, NotFoundError, getError } from "~/src/util/error";
+import type { UserAllInfo, UserBasic } from "~shared/src/domain.types";
 import {
    type AccessTokenRes,
    type LoginReq,
@@ -8,8 +9,7 @@ import {
    type SimpleRes,
    loginSchema,
    registerSchema,
-} from "@shared/src/req-res.types";
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+} from "~shared/src/req-res.types";
 
 export const authController = (app: FastifyInstance) => {
    const secSvc = di.securitySvc();
@@ -41,7 +41,7 @@ export const authController = (app: FastifyInstance) => {
                createdAt: new Date(),
             },
          });
-         return rep.send({ message: "ok" });
+         return { message: "ok" };
       } catch (e) {
          return getError(rep, e);
       }
@@ -67,7 +67,7 @@ export const authController = (app: FastifyInstance) => {
          }
 
          const jwt = secSvc.createJwtFrom(user);
-         return rep.send({ accessToken: jwt });
+         return { accessToken: jwt };
       } catch (error) {
          return getError(rep, error);
       }
@@ -85,7 +85,10 @@ export const authController = (app: FastifyInstance) => {
             itemKey: { pk: key, sk: key },
             pickKeys: ["id", "email", "role", "createdAt", "lastLogin"],
          });
-         return rep.send(user);
+
+         if (!user) throw new NotFoundError(`user not found: ${claims.email}`);
+
+         return user;
       } catch (e) {
          return getError(rep, e);
       }
@@ -103,13 +106,14 @@ export const authController = (app: FastifyInstance) => {
             itemKey: { pk: key, sk: key },
             pickKeys: ["id", "email", "role", "createdAt", "lastLogin"],
          });
-         if (!user) {
-            throw new BadRequestError("user not found");
-         }
+
+         if (!user) throw new NotFoundError(`user not found: ${claims.email}`);
+
          await ddb.deleteItem({
             itemKey: { pk: key, sk: key },
          });
-         return rep.send({ message: "success" });
+
+         return { message: "success" };
       } catch (e) {
          return getError(rep, e);
       }
@@ -120,11 +124,11 @@ export const authController = (app: FastifyInstance) => {
          try {
             const hashJwt = req.headers.authorization?.split("Bearer ")[1];
             if (!secSvc.validJwt(hashJwt)) {
-               reply.code(401).send({ message: "Unauthorized" });
+               return reply.code(401).send({ message: "Unauthorized" });
             }
          } catch (error) {
             console.error(JSON.stringify(error));
-            reply.code(401).send({ message: "Unauthorized" });
+            return reply.code(401).send({ message: "Unauthorized" });
          }
       }
    };
