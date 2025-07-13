@@ -29,19 +29,16 @@ async function zipDir(sourceDir, outPath) {
  */
 function deleteDirectory(dirPath) {
    if (!fs.existsSync(dirPath)) {
-      console.info(`directory does not exist: ${dirPath}`);
       return;
    }
 
    const stats = fs.statSync(dirPath);
    if (!stats.isDirectory()) {
-      console.info(`path is not a directory: ${dirPath}`);
       return;
    }
 
    try {
       fs.rmSync(dirPath, { recursive: true });
-      console.info(`deleted directory: ${dirPath}`);
    } catch (err) {
       console.error(`Error deleting directory: ${dirPath}`, err);
    }
@@ -65,12 +62,10 @@ function esBuildProject(file, stage) {
       define: {
          "process.env.STAGE": `"${stage}"`,
       },
-   })
-      .catch(() => {
-         console.error("error occured during esbuild");
-         process.exit(1);
-      })
-      .finally(() => console.log("ESBUILD FINISHED"));
+   }).catch(() => {
+      console.error("error occured during esbuild");
+      process.exit(1);
+   });
 }
 
 module.exports = {
