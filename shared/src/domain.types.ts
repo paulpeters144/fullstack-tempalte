@@ -29,11 +29,14 @@ export interface UserAllInfo extends UserBasic {
    password: string;
 }
 
-export interface TodoItem {
+export interface TodoBasic {
    id: string;
    todo: string;
    status: TodoStatus;
-   userId: string;
    createdAt: Date;
+}
+
+export interface TodoAllData extends TodoBasic {
+   userId: string;
    updatedAt: Date;
 }

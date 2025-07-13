@@ -1,9 +1,12 @@
 import { environment } from "@/environment";
-import type { TodoItem, UserBasic } from "@shared/src/domain.types";
+import { secureCookie } from "@/util/cookie";
+import log from "@/util/logger";
+import type { TodoBasic, UserBasic } from "@shared/src/domain.types";
 import type {
    AccessTokenRes,
    CreateTodoReq,
    CreateTodoRes,
+   FriendlyErrorRes,
    LoginReq,
    PatchTodoReq,
    PatchTodoRes,
@@ -11,34 +14,82 @@ import type {
    SimpleRes,
 } from "@shared/src/req-res.types";
 
-async function fetchData<T>(url: string, options?: RequestInit): Promise<T> {
-   const response = await fetch(url, options);
+type Result<T> =
+   | {
+        value: T;
+        isError: false;
+        isFriendly: false;
+     }
+   | {
+        value: Error;
+        isError: true;
+        isFriendly: false;
+     }
+   | {
+        value: FriendlyErrorRes;
+        isError: true;
+        isFriendly: true;
+     };
 
-   if (!response.ok) {
-      let errorMessage = `HTTP Status: ${response.status}`;
-      try {
+async function fetchData<T>(url: string, options?: RequestInit): Promise<Result<T>> {
+   try {
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
          const json = await response.json();
-         if (json.error) {
-            errorMessage = json.error;
-         }
-      } catch (_) {}
-      throw new Error(errorMessage);
-   }
 
-   const contentType = response.headers.get("content-type");
-   if (contentType?.includes("application/json")) {
-      return response.json() as Promise<T>;
+         const isFriendly =
+            typeof json === "object" &&
+            json !== null &&
+            "error" in json &&
+            typeof json.error === "string";
+
+         if (isFriendly) {
+            return {
+               value: json.error as FriendlyErrorRes,
+               isError: true,
+               isFriendly: true,
+            };
+         }
+
+         return {
+            value: new Error(`HTTP Status: ${response.status} - ${json}`),
+            isError: true,
+            isFriendly: false,
+         };
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (contentType?.includes("application/json")) {
+         const data = await response.json();
+         return { value: data as T, isError: false, isFriendly: false };
+      }
+
+      return { value: {} as T, isError: false, isFriendly: false };
+   } catch (e) {
+      log.error(e);
+      if (e instanceof Error) {
+         return {
+            value: e,
+            isError: true,
+            isFriendly: false,
+         };
+      }
+      return {
+         value: new Error("unknown error"),
+         isError: true,
+         isFriendly: false,
+      };
    }
-   return {} as T;
 }
 
 export const apiClient = (props: { baseUrl: string }) => {
    const { baseUrl } = props;
-   let accessToken = "";
+   let accessToken = tryGetAccessToken();
 
    return {
       auth: {
-         signup: async (data: RegisterReq): Promise<SimpleRes> => {
+         signup: async (data: RegisterReq): Promise<Result<SimpleRes>> => {
             const res = await fetchData<SimpleRes>(`${baseUrl}/auth/signup`, {
                method: "POST",
                headers: {
@@ -49,7 +100,7 @@ export const apiClient = (props: { baseUrl: string }) => {
             return res;
          },
 
-         login: async (data: LoginReq): Promise<AccessTokenRes> => {
+         login: async (data: LoginReq): Promise<Result<AccessTokenRes>> => {
             const res = await fetchData<AccessTokenRes>(`${baseUrl}/auth/login`, {
                method: "POST",
                headers: {
@@ -60,18 +111,17 @@ export const apiClient = (props: { baseUrl: string }) => {
             return res;
          },
 
-         getUser: async (): Promise<UserBasic> => {
+         getUser: async (): Promise<Result<UserBasic>> => {
             const res = await fetchData<UserBasic>(`${baseUrl}/auth/user`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${accessToken}`,
-                  "Content-Type": "application/json",
                },
             });
             return res;
          },
 
-         deleteUser: async (): Promise<SimpleRes> => {
+         deleteUser: async (): Promise<Result<SimpleRes>> => {
             const res = await fetchData<SimpleRes>(`${baseUrl}/auth/user`, {
                method: "DELETE",
                headers: {
@@ -85,27 +135,25 @@ export const apiClient = (props: { baseUrl: string }) => {
          },
       },
       todo: {
-         getAll: async (): Promise<TodoItem[]> => {
-            return fetchData<TodoItem[]>(`${baseUrl}/todos`, {
+         getAll: async (): Promise<Result<TodoBasic[]>> => {
+            return fetchData<TodoBasic[]>(`${baseUrl}/todos`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${accessToken}`,
-                  "Content-Type": "application/json",
                },
             });
          },
 
-         getById: async (todoId: string): Promise<TodoItem> => {
-            return fetchData<TodoItem>(`${baseUrl}/todos/${todoId}`, {
+         getById: async (todoId: string): Promise<Result<TodoBasic>> => {
+            return fetchData<TodoBasic>(`${baseUrl}/todos/${todoId}`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${accessToken}`,
-                  "Content-Type": "application/json",
                },
             });
          },
 
-         create: async (data: CreateTodoReq): Promise<CreateTodoRes> => {
+         create: async (data: CreateTodoReq): Promise<Result<CreateTodoRes>> => {
             return fetchData<CreateTodoRes>(`${baseUrl}/todos`, {
                method: "POST",
                headers: {
@@ -119,7 +167,7 @@ export const apiClient = (props: { baseUrl: string }) => {
          patch: async (
             todoId: string,
             data: PatchTodoReq,
-         ): Promise<PatchTodoRes> => {
+         ): Promise<Result<PatchTodoRes>> => {
             return fetchData<PatchTodoRes>(`${baseUrl}/todos/${todoId}`, {
                method: "PATCH",
                headers: {
@@ -130,7 +178,7 @@ export const apiClient = (props: { baseUrl: string }) => {
             });
          },
 
-         delete: async (todoId: string): Promise<SimpleRes> => {
+         delete: async (todoId: string): Promise<Result<SimpleRes>> => {
             return fetchData<SimpleRes>(`${baseUrl}/todos/${todoId}`, {
                method: "DELETE",
                headers: {
@@ -143,3 +191,12 @@ export const apiClient = (props: { baseUrl: string }) => {
 };
 
 export const api = apiClient({ baseUrl: environment.baseUrl });
+
+function tryGetAccessToken() {
+   try {
+      return secureCookie.get("access");
+   } catch (e) {
+      log.error(e);
+   }
+   return "";
+}

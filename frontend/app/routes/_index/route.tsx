@@ -1,9 +1,14 @@
 import { pageAction } from "@/routes/_index/actions";
 import { LoginForm } from "@/routes/_index/components/Login";
 import { RegisterForm } from "@/routes/_index/components/Register";
+import { secureCookie } from "@/util/cookie";
 import type { MetaFunction } from "@remix-run/node";
-import type { ClientActionFunctionArgs } from "@remix-run/react";
-import { useState } from "react";
+import {
+   type ClientActionFunctionArgs,
+   redirect,
+   useSearchParams,
+} from "@remix-run/react";
+import { useMemo, useState } from "react";
 
 export const meta: MetaFunction = () => {
    return [
@@ -24,8 +29,27 @@ export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
    throw new Error("undefine form for action");
 };
 
+export const clientLoader = async () => {
+   const claims = secureCookie.claims();
+   if (claims.email) {
+      return redirect("/home");
+   }
+   return null;
+};
+
 export default function Index() {
+   const [searchParams] = useSearchParams();
+   const formParam = searchParams.get("form");
    const [isLogin, setIsLogin] = useState(true);
+
+   useMemo(() => {
+      if (formParam === "register") {
+         setIsLogin(false);
+      }
+      if (formParam === "signin") {
+         setIsLogin(true);
+      }
+   }, [formParam]);
 
    return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans p-4">

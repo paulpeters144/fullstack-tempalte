@@ -1,6 +1,6 @@
 ### VARIABLES ###
 @BASE_URL=http://localhost:3000/api
-@ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE1ZjllNTQ5ZDdlYTQ2Yzc5Nzk1YTk2NGEiLCJyb2xlIjoidXNlciIsImVtYWlsIjoicGF1bEBlbWFpbC5jb20iLCJpYXQiOjE3NTIyNTAyMjksImV4cCI6MTc1MjI1MzgyOX0.W2HA8zUw8cyuDzr47Pj0QYyAoYvB6poUz_gTeHdKBaw
+@ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBjOGQ3N2JmZTVkOTQwNjM5YTM1YjRkYWIiLCJyb2xlIjoidXNlciIsImVtYWlsIjoicGF1bEBlbWFpbC5jb20iLCJpYXQiOjE3NTIzNDI3MTQsImV4cCI6MTc1MjM0NjMxNH0.wXxVZMjqDb1PkBeo8pM1ts7zWlHbfLkPdec_cjoFheg
 ### VARIABLES ###
 
 ########### AUTH ########### 
@@ -40,7 +40,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 }
 
 ### GET todo single
-GET {{BASE_URL}}/todos/cc1a8587b8aa478d9284f3b41
+GET {{BASE_URL}}/todos/359eb1b4f91c46aaad6e231ec
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### GET TODOs
@@ -48,7 +48,7 @@ GET {{BASE_URL}}/todos
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### UPDATE AN ENTIRE ToDo
-PATCH {{BASE_URL}}/todos/cc1a8587b8aa478d9284f3b41
+PATCH {{BASE_URL}}/todos/359eb1b4f91c46aaad6e231ec
 Content-Type: application/json
 Authorization: Bearer {{ACCESS_TOKEN}}
 
@@ -57,7 +57,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 }
 
 ### DELETE ToDo
-DELETE {{BASE_URL}}/todos/cc1a8587b8aa478d9284f3b41
+DELETE {{BASE_URL}}/todos/359eb1b4f91c46aaad6e231ec
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 # ~~~~~~~ END ToDos ~~~~~~~~~

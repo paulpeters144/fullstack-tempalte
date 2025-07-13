@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { type TodoItem, TodoStatusEnum } from "./domain.types";
+import { type TodoBasic, TodoStatusEnum } from "./domain.types";
 
 export interface FriendlyErrorRes {
    error: string;
@@ -51,7 +51,7 @@ export type RegisterRes = { message: string };
 
 export const createTodoSchema = z.object({
    todo: z
-      .string()
+      .string("todo is required")
       .min(1, { message: "todo is required." })
       .max(200, { message: "todo must not exceed 200 characters." }),
    status: TodoStatusEnum.default("in-progress"),
@@ -77,4 +77,4 @@ export const patchTodoSchema = z
       message: "at least one field must be provided for update: 'status', 'todo'",
    });
 export type PatchTodoReq = z.infer<typeof patchTodoSchema>;
-export type PatchTodoRes = TodoItem;
+export type PatchTodoRes = TodoBasic;

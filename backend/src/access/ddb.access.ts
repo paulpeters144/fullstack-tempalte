@@ -13,9 +13,10 @@ type GetItemQuery<T> = {
    pickKeys?: (keyof T)[];
 };
 
-type GetItemsStarsWithQuery = {
+type GetItemsStarsWithQuery<T> = {
    itemKey: { pk: string };
    startsWith?: string;
+   pickKeys?: (keyof T)[];
 };
 
 type PutItemQuery<T> = {
@@ -43,7 +44,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 export interface DdbAccess {
    getItem: <T>(query: GetItemQuery<T>) => Promise<T | undefined>;
-   getItems: <T>(query: GetItemsStarsWithQuery) => Promise<T[]>;
+   getItems: <T>(query: GetItemsStarsWithQuery<T>) => Promise<T[]>;
    putItem: <T>(query: PutItemQuery<T>) => Promise<void>;
    deleteItem: (query: DeleteItemQuery) => Promise<void>;
 }
@@ -81,8 +82,8 @@ export const createDdbAccess = (): DdbAccess => {
       return filteredItem as T;
    };
 
-   const getItems = async <T>(query: GetItemsStarsWithQuery): Promise<T[]> => {
-      const { itemKey: key, startsWith } = query;
+   const getItems = async <T>(query: GetItemsStarsWithQuery<T>): Promise<T[]> => {
+      const { itemKey: key, startsWith, pickKeys } = query;
 
       let keyConditionExpression = "PK = :pk";
       const expressionAttributeValues: { [key: string]: string } = {
@@ -100,12 +101,38 @@ export const createDdbAccess = (): DdbAccess => {
          ExpressionAttributeValues: expressionAttributeValues,
       });
 
-      const result = await docClient.send(command);
+      const response = await docClient.send(command);
+      if (!response.Items) return [];
 
-      if (!result.Items || result.Items.length === 0) {
-         return [];
+      if (pickKeys) {
+         const result: Record<string, unknown>[] = [];
+         const pickKeySet = new Set(pickKeys.map((t) => t.toString()));
+         for (const item of response.Items) {
+            const pickedItem: Record<string, unknown> = {};
+            for (const k of Object.keys(item)) {
+               if (!pickKeySet.has(k)) continue;
+               pickedItem[k] = item[k as string];
+            }
+
+            if (Object.keys(pickedItem).length > 0) {
+               result.push(pickedItem);
+            }
+         }
+         return result as T[];
       }
-      return result.Items as T[];
+
+      const result: Record<string, unknown>[] = [];
+      for (const item of response.Items) {
+         const resultItem: Record<string, unknown> = {};
+         for (const k of Object.keys(item)) {
+            if (k === "PK" || k === "SK") continue;
+            resultItem[k] = item[k as string];
+         }
+         if (Object.keys(resultItem).length > 0) {
+            result.push(resultItem);
+         }
+      }
+      return result as T[];
    };
 
    const putItem = async <T>(query: PutItemQuery<T>): Promise<void> => {

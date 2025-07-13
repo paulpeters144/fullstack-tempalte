@@ -1,6 +1,6 @@
 import { di } from "@/src/util/di";
 import { BadRequestError, getError } from "@/src/util/error";
-import type { TodoItem } from "@shared/src/domain.types";
+import type { TodoAllData, TodoBasic } from "@shared/src/domain.types";
 import {
    type CreateTodoReq,
    type CreateTodoRes,
@@ -21,16 +21,17 @@ export const todoController = (app: FastifyInstance) => {
    const getAllTodos = async (
       req: FastifyRequest,
       rep: FastifyReply,
-   ): Promise<TodoItem[]> => {
+   ): Promise<TodoBasic[]> => {
       try {
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
          const userTodosKey = `USER#${claims.id}#TD`;
 
-         const todos = await ddb.getItems<TodoItem>({
+         const todos: TodoBasic[] = await ddb.getItems<TodoBasic>({
             itemKey: { pk: userTodosKey },
             startsWith: "",
+            pickKeys: ["id", "todo", "status", "createdAt"],
          });
 
          return rep.send(todos || []);
@@ -42,14 +43,14 @@ export const todoController = (app: FastifyInstance) => {
    const getTodoById = async (
       req: FastifyRequest<{ Params: TodoParams }>,
       rep: FastifyReply,
-   ): Promise<TodoItem> => {
+   ): Promise<TodoBasic> => {
       try {
          todoParamsSchema.parse(req.params);
          const hashJwt = req.headers.authorization?.split("Bearer ")[1] || "";
          const claims = secSvc.getClaims(hashJwt);
 
          const todoPk = `USER#${claims.id}#TD`;
-         const todo = await ddb.getItem<TodoItem>({
+         const todo = await ddb.getItem<TodoAllData>({
             itemKey: { pk: todoPk, sk: req.params.id },
          });
 
@@ -60,8 +61,8 @@ export const todoController = (app: FastifyInstance) => {
          if (todo.userId !== claims.id) {
             throw new BadRequestError("Unauthorized to access this todo");
          }
-
-         return rep.send(todo);
+         const result = { id: todo.id, todo: todo.todo, status: todo.status };
+         return rep.send(result);
       } catch (error) {
          return getError(rep, error);
       }
@@ -80,7 +81,7 @@ export const todoController = (app: FastifyInstance) => {
          const todoPk = `USER#${claims.id}#TD`;
          const now = new Date();
 
-         await ddb.putItem<TodoItem>({
+         await ddb.putItem<TodoAllData>({
             key: { pk: todoPk, sk: todoId },
             item: {
                id: todoId,
@@ -110,7 +111,7 @@ export const todoController = (app: FastifyInstance) => {
 
          const todoKey = `USER#${claims.id}#TD`;
 
-         const existingTodo = await ddb.getItem<TodoItem>({
+         const existingTodo = await ddb.getItem<TodoAllData>({
             itemKey: { pk: todoKey, sk: req.params.id },
          });
 
@@ -122,14 +123,14 @@ export const todoController = (app: FastifyInstance) => {
             throw new BadRequestError("Unauthorized to update this todo");
          }
 
-         const updatedTodo: TodoItem = {
+         const updatedTodo: TodoAllData = {
             ...existingTodo,
             todo: req.body.todo ?? existingTodo.todo,
             status: req.body.status ?? existingTodo.status,
             updatedAt: new Date(),
          };
 
-         await ddb.putItem<TodoItem>({
+         await ddb.putItem<TodoAllData>({
             key: { pk: todoKey, sk: req.params.id },
             item: updatedTodo,
          });
@@ -151,7 +152,7 @@ export const todoController = (app: FastifyInstance) => {
 
          const todoKey = `USER#${claims.id}#TD`;
 
-         const existingTodo = await ddb.getItem<TodoItem>({
+         const existingTodo = await ddb.getItem<TodoAllData>({
             itemKey: { pk: todoKey, sk: req.params.id },
             pickKeys: ["id", "userId"],
          });
