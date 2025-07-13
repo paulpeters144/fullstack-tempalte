@@ -5,14 +5,13 @@
       "infra": "bin/infra.js"
    },
    "scripts": {
-      "build": "tsc",
-      "watch": "tsc -w",
-      "test": "jest",
-      "cdk": "cdk"
+      "cdk:diff:staging": "cdk diff -c stage=staging"
    },
    "dependencies": {
       "aws-cdk-lib": "2.202.0",
-      "constructs": "^10.0.0"
+      "aws-sdk": "^2.1692.0",
+      "constructs": "^10.0.0",
+      "dotenv": "^17.2.0"
    },
    "devDependencies": {
       "@types/node": "22.7.9",
