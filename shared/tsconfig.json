@@ -17,5 +17,5 @@
       }
    },
    "types": ["node"],
-   "include": ["src/**/*.ts", "./src"],
+   "include": ["src/**/*.ts", "./src"]
 }
