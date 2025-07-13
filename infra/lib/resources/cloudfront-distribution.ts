@@ -38,5 +38,10 @@ export class CloudfrontDist {
          enabled: true,
          comment: `CloudFront distribution for ${appName} ${stage}`,
       });
+
+      new cdk.CfnOutput(construct, "CloudfrontDistDomainName", {
+         value: this.resource.domainName,
+         description: "Cloudfront Dist Domain Name",
+      });
    }
 }

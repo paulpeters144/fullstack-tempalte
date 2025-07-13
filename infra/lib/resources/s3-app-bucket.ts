@@ -13,6 +13,7 @@ export class S3WebApp {
    constructor({ construct, appName, stage }: S3WebAppProps) {
       const bucketName = `${appName}-${stage}-web-app`;
       this.resource = new cdk.aws_s3.Bucket(construct, bucketName, {
+         bucketName,
          websiteIndexDocument: "index.html",
          websiteErrorDocument: "error.html",
       });

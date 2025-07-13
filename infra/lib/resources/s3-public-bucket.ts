@@ -32,10 +32,5 @@ export class S3PublicBucket {
             principals: [new cdk.aws_iam.ArnPrincipal("*")],
          }),
       );
-
-      new cdk.CfnOutput(construct, "PublicBucketURL", {
-         value: this.resource.bucketWebsiteUrl,
-         description: "URL of the public S3 bucket",
-      });
    }
 }
