@@ -5,6 +5,7 @@
       "infra": "bin/infra.js"
    },
    "scripts": {
+      "build-artifacts": "node scripts/build-artifacts.js",
       "cdk:diff:uat": "cdk diff -c stage=uat",
       "cdk:deploy:uat": "cdk deploy -c stage=uat"
    },

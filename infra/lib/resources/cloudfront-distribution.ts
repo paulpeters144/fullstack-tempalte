@@ -24,7 +24,7 @@ export class CloudfrontDist {
             origin: origin,
             viewerProtocolPolicy: cf.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             compress: true,
-            cachePolicy: cf.CachePolicy.CACHING_OPTIMIZED,
+            cachePolicy: cf.CachePolicy.CACHING_DISABLED,
          },
          defaultRootObject: "index.html",
          errorResponses: [
