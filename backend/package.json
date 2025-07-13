@@ -6,7 +6,7 @@
    "scripts": {
       "build": "tsc",
       "start": "node dist/server.js",
-      "dev": "nodemon --exec tsx src/server.ts",
+      "dev": "cross-env STAGE=local nodemon --exec tsx src/server.ts",
       "test": "vitest",
       "doctor": "node scripts/local.doctor.js",
       "build:local:app": "node scripts/server-build.js -s local",
@@ -25,6 +25,7 @@
       "@fastify/sensible": "^6.0.3",
       "fastify": "^5.4.0",
       "jsonwebtoken": "^9.0.2",
+      "yaml": "^2.8.0",
       "zod": "^4.0.2"
    },
    "devDependencies": {
@@ -32,9 +33,11 @@
       "@types/aws-lambda-fastify": "^1.4.5",
       "@types/jsonwebtoken": "^9.0.10",
       "@types/node": "^24.0.12",
+      "@types/yaml": "^1.9.7",
       "archiver": "^7.0.1",
       "chalk": "4",
       "commander": "^14.0.0",
+      "cross-env": "^7.0.3",
       "esbuild": "^0.25.6",
       "nodemon": "^3.1.10",
       "tsconfig-paths": "^4.2.0",

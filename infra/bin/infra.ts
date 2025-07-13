@@ -25,7 +25,10 @@ const appName = "fullstack-template";
 const stackName = `${appName}-app-${contenxt.stage}`;
 
 new InfraStack(app, stackName, {
-   env: { account: process.env.AWS_ACCOUNT, region: process.env.AWS_REGION },
+   env: { 
+      account: process.env.AWS_ACCOUNT, 
+      region: process.env.AWS_REGION 
+   },
    stackName: stackName,
    tags: { stage: contenxt.stage, appName },
 });

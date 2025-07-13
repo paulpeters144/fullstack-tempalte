@@ -1,3 +1,4 @@
+import { env } from "@/src/config/env";
 import { type SecurityService, createSecuritySvc } from "@/src/service/security";
 import { type DdbAccess, createDdbAccess } from "../access/ddb.access";
 
@@ -14,7 +15,7 @@ export const di = (() => {
       },
       ddbAccess: () => {
          if (!ddbAccess) {
-            ddbAccess = createDdbAccess();
+            ddbAccess = createDdbAccess(env);
          }
          return ddbAccess;
       },

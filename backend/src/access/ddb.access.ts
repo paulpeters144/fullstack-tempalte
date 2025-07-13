@@ -1,4 +1,5 @@
 import { createDdbItem } from "@/src/access/util";
+import type { Env } from "@/src/config/env";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
    DeleteCommand,
@@ -28,20 +29,6 @@ type DeleteItemQuery = {
    itemKey: { pk: string; sk: string };
 };
 
-const TABLE_NAME = "app-table";
-const LOCAL_DYNAMODB_ENDPOINT = "http://localhost:8000";
-
-const client = new DynamoDBClient({
-   region: "localhost",
-   endpoint: LOCAL_DYNAMODB_ENDPOINT,
-   credentials: {
-      accessKeyId: "dummy",
-      secretAccessKey: "dummy",
-   },
-});
-
-const docClient = DynamoDBDocumentClient.from(client);
-
 export interface DdbAccess {
    getItem: <T>(query: GetItemQuery<T>) => Promise<T | undefined>;
    getItems: <T>(query: GetItemsStarsWithQuery<T>) => Promise<T[]>;
@@ -49,11 +36,27 @@ export interface DdbAccess {
    deleteItem: (query: DeleteItemQuery) => Promise<void>;
 }
 
-export const createDdbAccess = (): DdbAccess => {
+export const createDdbAccess = (env: Env): DdbAccess => {
+   const { ddbTable } = env;
+   const client = new DynamoDBClient(
+      env.stage === "local"
+         ? {
+              region: "localhost",
+              endpoint: "http://localhost:8000",
+              credentials: {
+                 accessKeyId: "dummy",
+                 secretAccessKey: "dummy",
+              },
+           }
+         : {},
+   );
+
+   const docClient = DynamoDBDocumentClient.from(client);
+
    const getItem = async <T>(query: GetItemQuery<T>): Promise<T | undefined> => {
       const { itemKey: key, pickKeys } = query;
       const command = new GetCommand({
-         TableName: TABLE_NAME,
+         TableName: ddbTable,
          Key: { PK: key.pk, SK: key.sk },
       });
       const response = await docClient.send(command);
@@ -96,7 +99,7 @@ export const createDdbAccess = (): DdbAccess => {
       }
 
       const command = new QueryCommand({
-         TableName: TABLE_NAME,
+         TableName: ddbTable,
          KeyConditionExpression: keyConditionExpression,
          ExpressionAttributeValues: expressionAttributeValues,
       });
@@ -138,14 +141,14 @@ export const createDdbAccess = (): DdbAccess => {
    const putItem = async <T>(query: PutItemQuery<T>): Promise<void> => {
       const { key, item } = query;
       const putItem = createDdbItem({ key: key, item: item || {} });
-      const command = new PutCommand({ TableName: TABLE_NAME, Item: putItem });
+      const command = new PutCommand({ TableName: ddbTable, Item: putItem });
       await docClient.send(command);
    };
 
    const deleteItem = async (query: DeleteItemQuery): Promise<void> => {
       const { itemKey: key } = query;
       const command = new DeleteCommand({
-         TableName: TABLE_NAME,
+         TableName: ddbTable,
          Key: { PK: key.pk, SK: key.sk },
       });
       await docClient.send(command);

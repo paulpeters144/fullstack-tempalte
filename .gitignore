@@ -129,3 +129,5 @@ preDist
 env.*.ts
 
 cdk.out/
+
+.config.*.yaml

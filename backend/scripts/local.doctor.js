@@ -13,8 +13,7 @@ const exec = promisify(execCb);
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const tableName = "app-table";
-
+const tableName = "fullstack-template-ddb-table-local";
 let c;
 const getDdbClient = () => {
    if (!c) {
