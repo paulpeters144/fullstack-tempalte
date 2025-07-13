@@ -1,6 +1,6 @@
 const { program } = require("commander");
 const { execSync } = require("node:child_process");
-const { deleteDirectory, esBuildProject, zipDir } = require("./util");
+const { deleteDirectory, esBuildProject } = require("./util");
 
 program
    .version("0.0.1")
