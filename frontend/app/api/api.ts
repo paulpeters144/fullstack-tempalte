@@ -1,4 +1,4 @@
-import { environment } from "@/environment";
+import { env } from "@/env";
 import { secureCookie } from "@/util/cookie";
 import log from "@/util/logger";
 import type { TodoBasic, UserBasic } from "@shared/src/domain.types";
@@ -190,7 +190,7 @@ export const apiClient = (props: { baseUrl: string }) => {
    };
 };
 
-export const api = apiClient({ baseUrl: environment.baseUrl });
+export const api = apiClient({ baseUrl: env.baseUrl });
 
 function tryGetAccessToken() {
    try {

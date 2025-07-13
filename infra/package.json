@@ -5,7 +5,7 @@
       "infra": "bin/infra.js"
    },
    "scripts": {
-      "cdk:diff:staging": "cdk diff -c stage=staging"
+      "cdk:diff:uat": "cdk diff -c stage=uat"
    },
    "dependencies": {
       "aws-cdk-lib": "2.202.0",

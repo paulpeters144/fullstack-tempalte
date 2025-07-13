@@ -1,4 +1,4 @@
-import { environment } from "@/environment";
+import { env } from "@/env";
 import log from "@/util/logger";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
@@ -11,11 +11,8 @@ const set = (
    value: string,
    options: Cookies.CookieAttributes = {},
 ): void => {
-   if (!environment.cookieKey) throw new Error("cookie key not found");
-   const encryptedValue = CryptoJS.AES.encrypt(
-      value,
-      environment.cookieKey,
-   ).toString();
+   if (!env.cookieKey) throw new Error("cookie key not found");
+   const encryptedValue = CryptoJS.AES.encrypt(value, env.cookieKey).toString();
 
    Cookies.set(key, encryptedValue, {
       secure: true,
@@ -28,10 +25,10 @@ const set = (
 const get = (key: CookieKey): string | null => {
    const encryptedValue = Cookies.get(key);
    if (!encryptedValue) return null;
-   if (!environment.cookieKey) return null;
+   if (!env.cookieKey) return null;
 
    try {
-      const bytes = CryptoJS.AES.decrypt(encryptedValue, environment.cookieKey);
+      const bytes = CryptoJS.AES.decrypt(encryptedValue, env.cookieKey);
       return bytes.toString(CryptoJS.enc.Utf8);
    } catch (error) {
       log.error("Error decrypting cookie:", error);

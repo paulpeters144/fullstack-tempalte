@@ -127,3 +127,5 @@ preDist
 .pnp.*
 
 env.*.ts
+
+cdk.out/

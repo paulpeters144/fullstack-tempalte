@@ -10,7 +10,7 @@
       "test": "vitest",
       "doctor": "node scripts/local.doctor.js",
       "build:local:app": "node scripts/server-build.js -s local",
-      "deploy:staging:lambda": "node scripts/server-deploy.js -s staging"
+      "deploy:uat:lambda": "node scripts/server-deploy.js -s uat"
    },
    "keywords": [],
    "author": "",

@@ -18,8 +18,8 @@
       "production": {
          "stage": "prod"
       },
-      "staging": {
-         "stage": "staging"
+      "uat": {
+         "stage": "uat"
       },
       "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
       "@aws-cdk/core:checkSecretUsage": true,
