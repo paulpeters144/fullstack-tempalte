@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDdbItem } from "../access/util";
+import { createDdbItem } from "../util";
 
 describe("createDynamoDBItem", () => {
    it("should properly transform complex nested object with all supported types", () => {
