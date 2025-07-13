@@ -1,6 +1,11 @@
 const { program } = require("commander");
 const { execSync } = require("node:child_process");
-const { deleteDirectory, esBuildProject } = require("./util");
+const {
+   deleteDirectory,
+   esBuildProject,
+   zipDir,
+   uploadToAwsLambda,
+} = require("./util");
 
 program
    .version("0.0.1")
@@ -16,19 +21,32 @@ if (!stage) {
 
 async function main() {
    try {
-      console.info(`stage configured:    [${stage}]`);
+      console.info(`stage configured:   [${stage}]`);
+
+      console.info("cleaning old build  [1/5]");
       deleteDirectory("./preDist");
       deleteDirectory("./dist");
 
-      console.info("transpiling project  [1/3]");
+      console.info("transpiling project [2/5]");
       execSync("npx tsc -p tsconfig.json");
 
-      console.info("building project     [2/3]");
       const file = stage === "local" ? "server" : "lambda";
       await esBuildProject(file, stage);
 
+      console.info("building project    [3/5]");
+      zipDir("./dist", "./dist/lambda.zip");
+
+      console.info("uploading artifact  [4/5]");
+      await new Promise((r) => setTimeout(r, 2500));
+      //   uploadToAwsLambda("dist/lambda.zip");
+      //   console.log("done!");
+
       deleteDirectory("./preDist");
-      console.info("done!                [3/3]");
+      //   deleteDirectory("./dist");
+
+      console.info("done!               [5/5]");
+
+      process.exit(0);
    } catch (err) {
       console.error("Error:", err);
    }
