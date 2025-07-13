@@ -1,6 +1,6 @@
 {
    "compilerOptions": {
-      "target": "es2024",
+      "target": "ESNext",
       "module": "CommonJS",
       "outDir": "./preDist",
       "strict": true,
@@ -11,6 +11,9 @@
       "inlineSources": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "skipLibCheck": true,
       "baseUrl": ".",
       "paths": {
          "@shared/*": ["../shared/*"],
@@ -19,5 +22,17 @@
    },
    "types": ["node"],
    "include": ["src/**/*.ts", "./src"],
-   "exclude": ["__test__/**/*"]
+   "exclude": [
+      "node_modules",
+      "dist",
+      "build",
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/__tests__",
+      "**/__tests__/**/*",
+      "**/test/**/*.ts",
+      "**/test/**/*.tsx"
+   ]
 }

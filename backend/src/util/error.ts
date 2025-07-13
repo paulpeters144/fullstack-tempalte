@@ -1,4 +1,4 @@
-import type { FriendlyError } from "@shared/src/types";
+import type { FriendlyErrorRes } from "@shared/src/req-res.types";
 import { type ModelErrors, zodErrorMessages } from "@shared/src/validation";
 import type { FastifyError, FastifyReply } from "fastify";
 import { ZodError } from "zod";
@@ -13,7 +13,7 @@ function isFastifyError(obj: unknown): boolean {
 }
 
 function handleFastifyError(reply: FastifyReply, error: FastifyError) {
-   const message: FriendlyError = { error: error.message };
+   const message: FriendlyErrorRes = { error: error.message };
    return reply.code(error.statusCode || 500).send(message);
 }
 
@@ -25,7 +25,7 @@ export const getError = (reply: FastifyReply, error: unknown): FastifyReply => {
          return reply.code(400).send(message);
       }
       if (error instanceof BadRequestError) {
-         const message: FriendlyError = { error: error.message };
+         const message: FriendlyErrorRes = { error: error.message };
          return reply.code(400).send(message);
       }
       if (isFastifyError(error)) {
@@ -36,7 +36,7 @@ export const getError = (reply: FastifyReply, error: unknown): FastifyReply => {
       console.error(error);
    }
 
-   const message: FriendlyError = { error: "Internal Server Error" };
+   const message: FriendlyErrorRes = { error: "Internal Server Error" };
    return reply.code(500).send(message);
 };
 
