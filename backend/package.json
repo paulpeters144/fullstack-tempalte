@@ -10,6 +10,7 @@
       "test": "vitest",
       "doctor": "node scripts/local.doctor.js",
       "build:local:app": "node scripts/server-build.js -s local",
+      "build:uat:lambda": "node scripts/server-build.js -s uat",
       "deploy:uat:lambda": "node scripts/server-deploy.js -s uat"
    },
    "keywords": [],

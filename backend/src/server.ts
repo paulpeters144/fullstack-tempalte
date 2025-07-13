@@ -1,4 +1,4 @@
-import { register } from "@/src/controllers/z_register";
+import register, * as ctrl from "@/src/controllers/z_register";
 import cors from "@fastify/cors";
 import fastify, { type FastifyInstance } from "fastify";
 
@@ -12,9 +12,11 @@ app.register(cors, {
    allowedHeaders: ["Content-Type", "Authorization"],
 });
 
-register.authController(app);
-register.todoController(app);
-register.healthController(app);
+register(app).withController(
+   ctrl.authController,
+   ctrl.todoController,
+   ctrl.healthController,
+);
 
 if (require.main === module) {
    app.listen({ host: "0.0.0.0", port: PORT }, (err, address) => {
