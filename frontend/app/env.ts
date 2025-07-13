@@ -4,6 +4,7 @@ interface Env {
    baseUrl: string;
    cookieKey: string;
    stage: Stage;
+   cache: Record<string, string>;
 }
 
 const env: Env = (() => {
@@ -14,19 +15,6 @@ const env: Env = (() => {
       stage,
       lastBuild: import.meta.env?.VITE_BUILD_TIMESTAMP,
       cache: {},
-      mixpanel: (() => {
-         if (stage === "prod") {
-            return {
-               project: import.meta.env?.VITE_PROD_MIXPANEL_PROJECT,
-            };
-         }
-         if (stage === "uat") {
-            return {
-               project: import.meta.env?.VITE_UAT_MIXPANEL_PROJECT,
-            };
-         }
-         return {};
-      })(),
    };
 })();
 

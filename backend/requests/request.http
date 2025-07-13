@@ -61,3 +61,9 @@ DELETE {{BASE_URL}}/todos/359eb1b4f91c46aaad6e231ec
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 # ~~~~~~~ END ToDos ~~~~~~~~~
+
+########### health ########### 
+### GET todo single
+GET {{BASE_URL}}/health
+
+# ~~~~~~~ END health ~~~~~~~~~
